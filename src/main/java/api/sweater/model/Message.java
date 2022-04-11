@@ -14,7 +14,7 @@ public class Message {
     private String tag;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User author;
 
     public Message(String text, String tag, User user) {
