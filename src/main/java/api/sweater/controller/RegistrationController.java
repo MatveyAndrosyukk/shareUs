@@ -13,11 +13,14 @@ import java.util.*;
 
 @Controller
 public class RegistrationController {
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
+
+    public RegistrationController(UserRepository userRepository, UserService userService) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+    }
 
     @GetMapping("/registration")
     public String registrationPage(){
