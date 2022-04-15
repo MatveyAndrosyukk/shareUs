@@ -4,9 +4,10 @@ import api.sweater.model.Role;
 import api.sweater.model.User;
 import api.sweater.repository.UserRepository;
 import api.sweater.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
@@ -23,15 +24,16 @@ public class RegistrationController {
     }
 
     @GetMapping("/registration")
-    public String registrationPage(){
+    public String registrationPage(Model model){
+        model.addAttribute("user", new User());
         return "registration";
     }
 
     @PostMapping("/registration")
-    public String registration(User user, Map<String, Object> model){
+    public String registration(@ModelAttribute User user, Model model){
         User checkUser = userRepository.findByUsername(user.getUsername());
         if (checkUser != null){
-            model.put("message", "User exists!");
+            model.addAttribute("message", "User exists!");
             return "registration";
         }
         user.setActive(true);

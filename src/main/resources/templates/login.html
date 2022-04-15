@@ -5,13 +5,8 @@
     <title>Title</title>
 </head>
 <body>
-Registration Page:
-<div>
-    {{#message}}
-        {{message}}
-    {{/message}}
-</div>
-<form action="/registration" method="post">
+Login Page:
+<form th:action="@{/login}" method="post">
     <div>
         <input type="text" name="username" placeholder="Введите логин">
     </div>
@@ -19,12 +14,9 @@ Registration Page:
         <input type="password" name="password" placeholder="Введите пароль">
     </div>
     <div>
-        <input type="hidden" name="_csrf" value="{{_csrf.token}}">
-    </div>
-    <div>
-        <input type="submit" value="Зарегистрироваться">
+        <input type="submit" value="Войти">
     </div>
 </form>
-<a href="/login">Login Page</a>
+<a href="/registration">Registration Page</a>
 </body>
 </html>
