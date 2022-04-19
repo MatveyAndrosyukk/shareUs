@@ -1,12 +1,10 @@
 package api.sweater.model;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "sweater_user")
@@ -37,6 +35,10 @@ public class User implements UserDetails{
     }
 
     public User() {
+    }
+
+    public boolean isAdmin(){
+        return roles.contains(new Role("ADMIN"));
     }
 
     @Override
@@ -103,5 +105,16 @@ public class User implements UserDetails{
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", active=" + active +
+                ", roles=" + roles +
+                '}';
     }
 }
