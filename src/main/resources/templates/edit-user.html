@@ -34,11 +34,11 @@
             </li>
         </ul>
 
-        <div sec:authorize="isAuthenticated()">
+        <div class="navbar-text" sec:authorize="isAuthenticated()">
             <span sec:authentication="principal.username">Username</span>
         </div>
 
-        <div style="margin-left: 5px" sec:authorize="isAuthenticated()">
+        <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="post">
                 <input type="submit" value="Logout">
             </form>

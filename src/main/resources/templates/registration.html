@@ -29,16 +29,16 @@
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/main}">Messages</a>
             </li>
-            <li class="nav-item"  sec:authorize="hasAuthority('ADMIN')">
+            <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
                 <a class="nav-link" th:href="@{/user}">Users</a>
             </li>
         </ul>
 
-        <div sec:authorize="isAuthenticated()">
+        <div class="navbar-text" sec:authorize="isAuthenticated()">
             <span sec:authentication="principal.username">Username</span>
         </div>
 
-        <div style="margin-left: 5px" sec:authorize="isAuthenticated()">
+        <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="post">
                 <input type="submit" value="Logout">
             </form>
@@ -47,24 +47,43 @@
 </nav>
 <!------------------>
 
-<!--Registration Form-->
-Registration Page:
-<div>
-    <span th:text="${message}"></span>
+<div class="container mt-5">
+    <!--Registration Form-->
+    <div style="text-align: center">
+        <h1>Registration Page</h1>
+    </div>
+    <div style="margin-bottom: 5px; color: darkred; font-weight: bold" th:if="${message}">
+        <span th:text="${message}"></span>
+    </div>
+    <form th:action="@{/registration}" method="post" th:object="${user}">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="username" id="username" placeholder="Введите логин"
+                       th:field="*{username}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="email" name="email" id="email" placeholder="Введите почту"
+                       th:field="*{email}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="password" name="password" id="password" placeholder="Введите пароль"
+                       th:field="*{password}">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+    <span>Already have account? Log in </span>
+    <a th:href="@{/login}">here</a>
+    <span>.</span>
+    <!--------------------->
 </div>
-<form th:action="@{/registration}" method="post" th:object="${user}">
-    <div>
-        <input type="text" name="username" placeholder="Введите логин" th:field="*{username}">
-    </div>
-    <div>
-        <input type="password" name="password" placeholder="Введите пароль" th:field="*{password}">
-    </div>
-    <div>
-        <input type="submit" value="Зарегистрироваться">
-    </div>
-</form>
-<a href="/login">Login Page</a>
-<!--------------------->
 
 <!--Scripts-->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

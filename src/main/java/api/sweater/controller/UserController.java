@@ -49,7 +49,6 @@ public class UserController {
                 user.getRoles().add(new Role(key));
             }
         }
-
         user.setUsername(username);
         user.setActive(active);
 

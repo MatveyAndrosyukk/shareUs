@@ -34,11 +34,11 @@
             </li>
         </ul>
 
-        <div sec:authorize="isAuthenticated()">
+        <div class="navbar-text" sec:authorize="isAuthenticated()">
             <span sec:authentication="principal.username">Username</span>
         </div>
 
-        <div style="margin-left: 5px" sec:authorize="isAuthenticated()">
+        <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="post">
                 <input type="submit" value="Logout">
             </form>
@@ -47,24 +47,38 @@
 </nav>
 <!------------------>
 
-<!--Login Form-->
-Login Page:
-<form th:action="@{/login}" method="post">
-    <div th:if="${param.logout}">
-        You logged out successfully!
+<div class="container mt-5">
+    <!--Login Form-->
+    <div style="text-align: center">
+        <h1>Login Page</h1>
     </div>
-    <div>
-        <input type="text" name="username" placeholder="Введите логин">
-    </div>
-    <div>
-        <input type="password" name="password" placeholder="Введите пароль">
-    </div>
-    <div>
-        <input type="submit" value="Войти">
-    </div>
-</form>
-<a href="/registration">Registration Page</a>
-<!-------------->
+    <form th:action="@{/login}" method="post">
+        <div style="margin-bottom: 5px; color: darkslateblue; font-weight: bold" th:if="${param.logout}">
+            You logged out successfully!
+        </div>
+        <div style="margin-bottom: 5px; color: darkslateblue; font-weight: bold" th:if="${message}">
+            <span th:text="${message}"/>
+        </div>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="username" id="username" placeholder="Введите логин">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="password" name="password" id="password" placeholder="Введите пароль">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+    <span>Don't have account? Register </span>
+    <a th:href="@{/registration}">here</a>
+    <span>.</span>
+    <!-------------->
+</div>
 
 <!--Scripts-->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
