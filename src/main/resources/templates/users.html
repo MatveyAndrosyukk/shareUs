@@ -35,7 +35,7 @@
         </ul>
 
         <div class="navbar-text" sec:authorize="isAuthenticated()">
-            <span sec:authentication="principal.username">Username</span>
+            <a sec:authentication="principal.username" th:href="@{/profile}">Username</a>
         </div>
 
         <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">

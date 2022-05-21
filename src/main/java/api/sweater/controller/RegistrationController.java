@@ -1,6 +1,5 @@
 package api.sweater.controller;
 
-import api.sweater.model.Role;
 import api.sweater.model.User;
 import api.sweater.repository.UserRepository;
 import api.sweater.service.UserService;
@@ -11,16 +10,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Arrays;
-
 @Controller
 public class RegistrationController {
-    private final UserRepository userRepository;
-
     private final UserService userService;
 
-    public RegistrationController(UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
+    public RegistrationController(UserService userService) {
         this.userService = userService;
     }
 

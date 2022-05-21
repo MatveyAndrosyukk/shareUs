@@ -15,7 +15,7 @@ public class Message {
 
     private String filename;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User author;
 
@@ -70,5 +70,16 @@ public class Message {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", tag='" + tag + '\'' +
+                ", filename='" + filename + '\'' +
+                ", author=" + author +
+                '}';
     }
 }

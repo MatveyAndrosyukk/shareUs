@@ -3,7 +3,10 @@ package api.sweater.controller;
 import api.sweater.model.Role;
 import api.sweater.model.User;
 import api.sweater.repository.UserRepository;
+import api.sweater.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +17,17 @@ import java.util.Map;
 @RequestMapping("/user")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public String userList(Model model) {
-        model.addAttribute("users", userRepository.findAll());
+    public String userList(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("users", userService.findAll());
+        model.addAttribute("user", user);
+        System.out.println(user.getId());
         return "users";
     }
 
@@ -41,18 +46,7 @@ public class UserController {
                            @RequestParam("username") String username,
                            @RequestParam("active") boolean active
     ) {
-        User user = userRepository.getById(id);
-        user.getRoles().clear();
-
-        for (String key: form.keySet()){
-            if (Role.allRoles.contains(new Role(key))){
-                user.getRoles().add(new Role(key));
-            }
-        }
-        user.setUsername(username);
-        user.setActive(active);
-
-        userRepository.save(user);
+        userService.editUser(form, id, username, active);
         return "redirect:/user";
     }
 }
