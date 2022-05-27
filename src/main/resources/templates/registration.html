@@ -52,29 +52,44 @@
     <div style="text-align: center">
         <h1>Registration Page</h1>
     </div>
-    <div style="margin-bottom: 5px; color: darkred; font-weight: bold" th:if="${message}">
-        <span th:text="${message}"></span>
+    <div style="margin-bottom: 5px; color: darkred; font-weight: bold" th:if="${usernameMessage}">
+        <span th:text="${usernameMessage}"></span>
     </div>
     <form th:action="@{/registration}" method="post" th:object="${user}">
         <div class="form-group">
             <label for="username">Username:</label>
             <div class="col-sm-6">
-                <input class="form-control" type="text" name="username" id="username" placeholder="Введите логин"
+                <input th:class="${usernameError} ? 'form-control is-invalid' : 'form-control'" type="text" name="username" id="username" placeholder="Введите логин"
                        th:field="*{username}">
+                <div class="invalid-feedback" th:if="${usernameError}">
+                    <span th:text="${usernameError}"></span>
+                </div>
             </div>
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
             <div class="col-sm-6">
-                <input class="form-control" type="email" name="email" id="email" placeholder="Введите почту"
+                <input th:class="${emailError} ? 'form-control is-invalid' : 'form-control'" type="email" name="email" id="email" placeholder="Введите почту"
                        th:field="*{email}">
+                <div class="invalid-feedback" th:if="${emailError}">
+                    <span th:text="${emailError}"></span>
+                </div>
             </div>
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
             <div class="col-sm-6">
-                <input class="form-control" type="password" name="password" id="password" placeholder="Введите пароль"
+                <input th:class="${passwordError} ? 'form-control is-invalid' : 'form-control'" type="password" name="password" id="password" placeholder="Введите пароль"
                        th:field="*{password}">
+                <div class="invalid-feedback" th:if="${passwordError}">
+                    <span th:text="${passwordError}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="g-recaptcha" data-sitekey="6LcXGhEgAAAAAGfvAIzARgnUeacrR3uS92dY5-Hr"></div>
+            <div th:if="${captchaError}" class="alert alert-danger" role="alert">
+                <span th:text="${captchaError}"></span>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
@@ -95,6 +110,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 <!----------->
 </body>
 </html>

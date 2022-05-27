@@ -29,7 +29,7 @@
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/main}">Messages</a>
             </li>
-            <li class="nav-item"  sec:authorize="hasAuthority('ADMIN')">
+            <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
                 <a class="nav-link" th:href="@{/user}">Users</a>
             </li>
         </ul>
@@ -53,7 +53,7 @@
         <form method="get" th:action="@{/main}">
             <div class="row">
                 <div class="col col-sm-4 ">
-                    <input class="form-control"  type="text" name="filter" placeholder="Ведите хештег для пойска">
+                    <input class="form-control" th:value="${filter}? ${filter}" type="text" name="filter" placeholder="Ведите хештег для пойска">
                 </div>
                 <div class="col">
                     <button type="submit" class="btn btn-primary">Найти</button>
@@ -64,15 +64,30 @@
     <!------------------------>
 
     <!--Send Message Form-->
-    <div style="border: 2px solid gray; padding: 2px">
+    <div style="padding: 2px">
         <form th:action="@{/main}" method="post" enctype="multipart/form-data">
             <div>
-                <input class="form-control" type="text" name="text" placeholder="Введите текст">
-                <input class="form-control" type="text" name="tag" placeholder="Введите хештег">
+                <div class="form-group">
+                    <input th:class="${textError}? 'form-control is-invalid' : 'form-control'"
+                           th:value="${message}? ${message.text}" type="text" name="text" placeholder="Введите текст">
+                    <div class="invalid-feedback" th:if="${textError}">
+                        <span th:text="${textError}"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input th:class="${tagError}? 'form-control is-invalid' : 'form-control'"
+                           th:value="${message}? ${message.tag}" type="text" name="tag" placeholder="Введите хештег">
+                    <div class="invalid-feedback" th:if="${tagError}">
+                        <span th:text="${tagError}"></span>
+                    </div>
+                </div>
             </div>
-            <small style="margin-left: 14px; color: darkred; font-weight: bold" th:text="${filterError}"/>
-            <div>
-                <input type="file" name="file">
+            <div class="form-group">
+                <div class="custom-file">
+                    <input type="file" name="file" id="file">
+                    <label for="file" class="custom-file-label">Choose file</label>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary">Отправить</button>
@@ -82,17 +97,25 @@
     <!--------------------->
 
     <!--Message List-->
-    <div style="border: 1px solid gray;
-            margin-top: 15px">
-        <div>Список сообщений:</div>
+    <div style="margin-top: 15px">
+        <h5 style="text-align: center">Messages:</h5>
         <th:block th:each="message : ${messages}">
             <div>
+                <a style="font-weight: bold; color: #133"
+                   th:text="${message.authorName}"
+                   th:href="@{/main/{authorName}(authorName=${message.authorName})}"
+                ></a>
+                <span>:</span>
                 <span th:text="${message.text}"></span>
-                <strong th:text="${message.authorName}"></strong>
+                <span>(</span>
                 <i th:text="${message.tag}"></i>
+                <span>)</span>
                 <div th:if="${message.filename}">
                     <img th:src="@{/img/{filename}(filename=${message.filename})}">
                 </div>
+                    <a style="color: crimson; font-weight: bold; font-size: 12px"
+                       th:if="${message.authorName} == ${user.username}"
+                       th:href="@{/main/delete-message/{messageId}(messageId = ${message.id})}">╳</a>
             </div>
         </th:block>
     </div>
@@ -109,6 +132,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 <!----------->
 </body>
 </html>

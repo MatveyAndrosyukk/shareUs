@@ -8,21 +8,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.constraints.Pattern;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Controller
-@Validated
 public class MainController {
     private final MessageRepository messageRepository;
 
@@ -48,52 +50,82 @@ public class MainController {
     @GetMapping("/main")
     public String main(
             @AuthenticationPrincipal User user,
-            @RequestParam(required = false)
-            @Pattern(regexp = "#.+", message = "введите #текст не длиннее 30 символов") String filter,
-            @RequestParam(required = false) String filterError,
+            @RequestParam(required = false) String filter,
             Model model
     ) {
-        if (filterError != null) {
-            model.addAttribute("filterError", "введите #текст не длиннее 30 символов");
-        }
-        Iterable<Message> messages;
+        List<Message> messages = new ArrayList<>();
         if (filter != null && !filter.isEmpty()) {
-            messages = messageRepository.findByTag(filter);
+            Iterable<Message> allMessages = messageRepository.findAll();
+            String[] tags = filter.split(" ");
+            for (Message message : allMessages) {
+                String[] messageTags = message.getTag().split(" ");
+                for (String tag:
+                     tags) {
+                    for (String messageTag: messageTags){
+                        if (messageTag.equals(tag)){
+                            messages.add(message);
+                        }
+                    }
+                }
+            }
+            model.addAttribute("filter", filter);
         } else {
-            messages = messageRepository.findAll();
+            messages = (List<Message>) messageRepository.findAll();
         }
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
         return "messages";
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public String handleConstraintViolationException(ConstraintViolationException e, Model model) {
-        model.addAttribute("filterError", "введите #текст не длиннее 30 символов");
-        return "redirect:/main";
-
-    }
-
     @PostMapping("/main")
     public String add(
             @AuthenticationPrincipal User user,
-            @RequestParam String text,
-            @RequestParam @Pattern(regexp = "#.+", message = "введите #текст не длиннее 30 символов") String tag,
+            @Valid Message message,
+            BindingResult bindingResult,
+            Model model,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        Message message = new Message(text, tag, user);
+        message.setAuthor(user);
 
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
+        if (bindingResult.hasErrors()){
+            Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errorsMap);
+            model.addAttribute("message", message);
+        }else {
+            if (file != null && !file.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+                String resultFileName = UUID.randomUUID() + "." + file.getOriginalFilename();
+                file.transferTo(new File(uploadPath + "/" + resultFileName));
+                message.setFilename(resultFileName);
             }
-            String resultFileName = UUID.randomUUID() + "." + file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/" + resultFileName));
-            message.setFilename(resultFileName);
+            messageRepository.save(message);
+
+            model.addAttribute("message", null);
         }
-        messageRepository.save(message);
-        return "redirect:/main";
+
+        Iterable<Message> messages = messageRepository.findAll();
+        model.addAttribute("messages", messages);
+        model.addAttribute("user", user);
+        return "messages";
     }
 
+    @GetMapping("/main/{author}")
+    public String getAuthorMessages(@PathVariable("author") String authorName,
+                                    Model model){
+        User author = userRepository.findByUsername(authorName);
+        List<Message> messages = messageRepository.findByAuthor(author);
+        model.addAttribute("messages", messages);
+        model.addAttribute("author", author);
+        System.out.println(messages);
+        return "author's-messages";
+    }
+
+    @GetMapping("/main/delete-message/{id}")
+    public String deleteMessage(@PathVariable("id") Long id){
+        messageRepository.deleteById(id);
+        return "redirect:/main";
+    }
 }

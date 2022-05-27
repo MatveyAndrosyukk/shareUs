@@ -3,6 +3,7 @@ package api.sweater.service;
 import api.sweater.model.Role;
 import api.sweater.model.User;
 import api.sweater.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,9 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     private final SendMailService mailService;
+
+    @Value("${hostname}")
+    private String hostname;
 
     public UserService(UserRepository userRepository, SendMailService mailService) {
         this.userRepository = userRepository;
@@ -59,8 +63,9 @@ public class UserService implements UserDetailsService {
 
         if (!StringUtils.isEmpty(saveUser.getEmail())) {
             String message = String.format("Hello, %s, \n" +
-                            "Welcome to Sweater. Please, visit next link: http://localhost:8080/activate/%s",
+                            "Welcome to Sweater. Please, visit next link: http://%s/activate/%s",
                     saveUser.getUsername(),
+                    hostname,
                     saveUser.getActivationCode());
             mailService.send(saveUser.getEmail(), "Activation Code", message);
         }
