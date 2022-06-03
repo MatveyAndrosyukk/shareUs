@@ -49,30 +49,70 @@
 <!------------------>
 
 <div class="container">
-    <!--Message List-->
-    <div>
-        <div style="margin-top: 20px; text-align: center">
-            <h2>Activities of author:</h2>
-            <span style="color: gray; font-size: 30px" th:text="${author.username}"></span>
-        </div>
-        <th:block th:each="message : ${messages}">
-            <div  style="margin-top: 15px">
-                <a style="font-weight: bold; color: #133"
-                   th:text="${message.authorName}"
-                   th:href="@{/main/{authorName}(authorName=${message.authorName})}"
-                ></a>
-                <span>:</span>
-                <span th:text="${message.text}"></span>
-                <span>(</span>
-                <i th:text="${message.tag}"></i>
-                <span>)</span>
-                <div th:if="${message.filename}">
-                    <img th:src="@{/img/{filename}(filename=${message.filename})}">
+    <div th:if="${currentUser.username} != ${author.username} and ${!isSubscriber}">
+        <a class="btn btn-info mt-5" th:href="@{/user/subscribe/{author}(author=${author.id})}">Subscribe</a>
+    </div>
+
+    <div th:if="${currentUser.username} != ${author.username} and ${isSubscriber}">
+        <a class="btn btn-info mt-5" th:href="@{/user/unsubscribe/{author}(author=${author.id})}">Unsubscribe</a>
+    </div>
+
+
+    <!--Subscribers and subscriptions-->
+    <div class="row mt-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <a style="font-weight: bold; color: blueviolet">Subscribers</a>
+                    </div>
+                    <div class="card-text">
+                        <span style="color: grey" th:text="${subscribers}"></span>
+                    </div>
                 </div>
             </div>
-        </th:block>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <a style="font-weight: bold; color: blueviolet">Subscriptions</a>
+                    </div>
+                    <div class="card-text">
+                        <span style="color: grey" th:text="${subscriptions}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!---------------->
+    <!-- - - - - - - - - - - - - - - -->
+
+    <div class="container">
+        <!--Message List-->
+        <div>
+            <div style="margin-top: 20px; text-align: center">
+                <h2>Activities of author:</h2>
+                <span style="color: gray; font-size: 30px" th:text="${author.username}"></span>
+            </div>
+            <th:block th:each="message : ${messages}">
+                <div  style="margin-top: 15px">
+                    <a style="font-weight: bold; color: #133"
+                       th:text="${message.authorName}"
+                       th:href="@{/main/{authorName}(authorName=${message.authorName})}"
+                    ></a>
+                    <span>:</span>
+                    <span th:text="${message.text}"></span>
+                    <span>(</span>
+                    <i th:text="${message.tag}"></i>
+                    <span>)</span>
+                    <div th:if="${message.filename}">
+                        <img th:src="@{/img/{filename}(filename=${message.filename})}">
+                    </div>
+                </div>
+            </th:block>
+        </div>
+        <!---------------->
+    </div>
 </div>
 
 <!--Scripts-->

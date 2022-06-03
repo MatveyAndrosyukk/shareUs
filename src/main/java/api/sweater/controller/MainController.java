@@ -9,8 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
@@ -59,10 +55,10 @@ public class MainController {
             String[] tags = filter.split(" ");
             for (Message message : allMessages) {
                 String[] messageTags = message.getTag().split(" ");
-                for (String tag:
-                     tags) {
-                    for (String messageTag: messageTags){
-                        if (messageTag.equals(tag)){
+                for (String tag :
+                        tags) {
+                    for (String messageTag : messageTags) {
+                        if (messageTag.equals(tag)) {
                             messages.add(message);
                         }
                     }
@@ -87,11 +83,11 @@ public class MainController {
     ) throws IOException {
         message.setAuthor(user);
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errorsMap);
             model.addAttribute("message", message);
-        }else {
+        } else {
             if (file != null && !file.getOriginalFilename().isEmpty()) {
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) {
@@ -113,19 +109,44 @@ public class MainController {
     }
 
     @GetMapping("/main/{author}")
-    public String getAuthorMessages(@PathVariable("author") String authorName,
-                                    Model model){
+    public String getAuthorMessages(@AuthenticationPrincipal User currentUser,
+                                    @PathVariable("author") String authorName,
+                                    Model model) {
         User author = userRepository.findByUsername(authorName);
         List<Message> messages = messageRepository.findByAuthor(author);
         model.addAttribute("messages", messages);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("author", author);
-        System.out.println(messages);
+        model.addAttribute("subscribers", author.countSubscribers());
+        model.addAttribute("subscriptions", author.countSubscriptions());
+        model.addAttribute("isSubscriber", author.isSubscriber(currentUser));
         return "author's-messages";
     }
 
     @GetMapping("/main/delete-message/{id}")
-    public String deleteMessage(@PathVariable("id") Long id){
+    public String deleteMessage(@PathVariable("id") Long id) {
         messageRepository.deleteById(id);
         return "redirect:/main";
+    }
+
+
+    @GetMapping("/user/subscribe/{author}")
+    public String subscribe(@PathVariable("author") User author,
+                            @AuthenticationPrincipal User currentUser){
+        author.getSubscribers().add(currentUser);
+        currentUser.getSubscriptions().add(author);
+        userRepository.save(author);
+        userRepository.save(currentUser);
+        return "redirect:/main/" + author.getUsername();
+    }
+
+    @GetMapping("/user/unsubscribe/{author}")
+    public String unsubscribe(@PathVariable("author") User author,
+                            @AuthenticationPrincipal User currentUser){
+        author.getSubscribers().remove(currentUser);
+        currentUser.getSubscriptions().remove(author);
+        userRepository.save(author);
+        userRepository.save(currentUser);
+        return "redirect:/main/" + author.getUsername();
     }
 }
