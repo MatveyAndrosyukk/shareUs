@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  api_service:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql_db
+    links:
+      - mysql_db:sweater_db
+  mysql_db:
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: sweater_db
+      MYSQL_USER: user228
+      MYSQL_PASSWORD: user228
+      MYSQL_ROOT_PASSWORD: 13574637480326
