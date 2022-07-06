@@ -46,7 +46,7 @@ public class User implements UserDetails{
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Message> messages;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "sweater_user_subscribers",
             joinColumns = @JoinColumn(name = "channel_id"),
@@ -54,7 +54,7 @@ public class User implements UserDetails{
     )
     private Set<User> subscribers = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "sweater_user_subscriptions",
             joinColumns = @JoinColumn(name = "subscriber_id"),

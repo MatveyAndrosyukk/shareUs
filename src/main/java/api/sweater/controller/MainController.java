@@ -142,11 +142,11 @@ public class MainController {
 
     @GetMapping("/user/unsubscribe/{author}")
     public String unsubscribe(@PathVariable("author") User author,
-                            @AuthenticationPrincipal User currentUser){
+                              @AuthenticationPrincipal User currentUser){
         author.getSubscribers().remove(currentUser);
         currentUser.getSubscriptions().remove(author);
-        userRepository.save(author);
         userRepository.save(currentUser);
+        userRepository.save(author);
         return "redirect:/main/" + author.getUsername();
     }
 }

@@ -7,14 +7,11 @@ import api.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/user")
@@ -44,6 +41,12 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.allRoles);
         return "edit-user";
+    }
+
+    @GetMapping("/delete/{user}")
+    public String removeUser(@PathVariable User user) {
+        userRepository.deleteById(user.getId());
+        return "redirect:/user";
     }
 
     @PostMapping()

@@ -16,7 +16,7 @@
 <body>
 <!--Navigation bar-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand">Sweater</a>
+    <a style="font-size: 25px" class="navbar-brand">Sweater</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -25,23 +25,23 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/}">Home</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/main}">Messages</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/main}">Messages</a>
             </li>
             <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link" th:href="@{/user}">Users</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/user}">Accounts</a>
             </li>
         </ul>
 
-        <div class="navbar-text" sec:authorize="isAuthenticated()">
-            <a sec:authentication="principal.username" th:href="@{/profile}">Username</a>
+        <div class="navbar-text mt-1" sec:authorize="isAuthenticated()">
+            <a style="font-size: 20px" sec:authentication="principal.username" th:href="@{/profile}">Username</a>
         </div>
 
         <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout">
+                <input style="font-size: 19px" class="btn btn-light" type="submit" value="Logout">
             </form>
         </div>
     </div>
@@ -49,70 +49,75 @@
 <!------------------>
 
 <div class="container">
-    <div th:if="${currentUser.username} != ${author.username} and ${!isSubscriber}">
-        <a class="btn btn-info mt-5" th:href="@{/user/subscribe/{author}(author=${author.id})}">Subscribe</a>
-    </div>
+    <div>
+        <!--Information about Author-->
+        <div class="row mt-3">
+            <div class="col">
+                <img style="width: 150px; height: 150px" class="rounded-circle mx-auto d-block"
+                     th:src="@{/img/images/noavatar.jpg}">
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <div th:if="${currentUser.username} != ${author.username} and ${!isSubscriber}">
+                    <a style="font-size: 19px" class="btn btn-info" th:href="@{/user/subscribe/{author}(author=${author.id})}">Subscribe</a>
+                </div>
 
-    <div th:if="${currentUser.username} != ${author.username} and ${isSubscriber}">
-        <a class="btn btn-info mt-5" th:href="@{/user/unsubscribe/{author}(author=${author.id})}">Unsubscribe</a>
-    </div>
-
-
-    <!--Subscribers and subscriptions-->
-    <div class="row mt-2">
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title">
-                        <a style="font-weight: bold; color: blueviolet">Subscribers</a>
+                <div th:if="${currentUser.username} != ${author.username} and ${isSubscriber}">
+                    <a style="font-size: 19px" class="btn btn-info" th:href="@{/user/unsubscribe/{author}(author=${author.id})}">Unsubscribe</a>
+                </div>
+            </div>
+            <div class="col-6" style="text-align: center">
+                <span style="font-size: 20px" th:text="${author.username}"></span>
+            </div>
+            <div class="col">
+                <div style="display: flex" class="float-right">
+                    <div class="mr-3">
+                        <span style="font-size: 19px">Subscriptions : </span>
+                        <span th:text="${subscriptions}"></span>
                     </div>
-                    <div class="card-text">
-                        <span style="color: grey" th:text="${subscribers}"></span>
+                    <div>
+                        <span style="font-size: 19px">Followers : </span>
+                        <span th:text="${subscribers}"></span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title">
-                        <a style="font-weight: bold; color: blueviolet">Subscriptions</a>
-                    </div>
-                    <div class="card-text">
-                        <span style="color: grey" th:text="${subscriptions}"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!---------------------------->
     </div>
-    <!-- - - - - - - - - - - - - - - -->
 
-    <div class="container">
-        <!--Message List-->
-        <div>
-            <div style="margin-top: 20px; text-align: center">
-                <h2>Activities of author:</h2>
-                <span style="color: gray; font-size: 30px" th:text="${author.username}"></span>
-            </div>
-            <th:block th:each="message : ${messages}">
-                <div  style="margin-top: 15px">
-                    <a style="font-weight: bold; color: #133"
-                       th:text="${message.authorName}"
-                       th:href="@{/main/{authorName}(authorName=${message.authorName})}"
-                    ></a>
-                    <span>:</span>
-                    <span th:text="${message.text}"></span>
-                    <span>(</span>
-                    <i th:text="${message.tag}"></i>
-                    <span>)</span>
-                    <div th:if="${message.filename}">
-                        <img th:src="@{/img/{filename}(filename=${message.filename})}">
+    <div class="row">
+        <!--Author's Activities-->
+        <div class="mt-5">
+            <span style="font-size: 25px">All Activities</span>
+            <div class="card-columns mt-2">
+                <th:block th:each="message : ${messages}">
+                    <div class="card">
+                        <div th:if="${message.filename}">
+                            <img class="card-img-top" th:src="@{/img/{filename}(filename=${message.filename})}"
+                                 alt="Card image cap">
+                        </div>
+                        <div th:unless="${message.filename}">
+                            <img class="card-img-top" th:src="@{/img/images/smile.jpg}" alt="Card image cap">
+                        </div>
+                        <div class="card-body">
+                            <a style="font-size: 18px; font-weight: bold; color: #133" class="card-title"
+                               th:text="${message.authorName}"
+                               th:href="@{/main/{authorName}(authorName=${message.authorName})}">Card title</a>
+                            <p class="card-text" th:text="${message.text}"></p>
+                            <div>
+                                <a class="btn btn-danger" th:if="${message.authorName} == ${currentUser.username}"
+                                   th:href="@{/main/delete-message/{messageId}(messageId = ${message.id})}">Delete</a>
+                                <span style="float: right" th:text="${message.tag}"></span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </th:block>
+                </th:block>
+            </div>
         </div>
         <!---------------->
     </div>
+
 </div>
 
 <!--Scripts-->

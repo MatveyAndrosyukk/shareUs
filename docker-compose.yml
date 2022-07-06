@@ -2,15 +2,15 @@ version: "3.7"
 services:
   api_service:
     build: .
+    hostname: api_service
     restart: always
     ports:
       - 8080:8080
     depends_on:
       - mysql_db
-    links:
-      - mysql_db:sweater_db
   mysql_db:
     image: "mysql:8.0"
+    hostname: mysql_db
     restart: always
     ports:
       - 3307:3306

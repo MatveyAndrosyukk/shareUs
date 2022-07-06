@@ -15,7 +15,7 @@
 <body>
 <!--Navigation bar-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand">Sweater</a>
+    <a style="font-size: 25px" class="navbar-brand">Sweater</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -24,23 +24,23 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/}">Home</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/main}">Messages</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/main}">Messages</a>
             </li>
-            <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link" th:href="@{/user}">Users</a>
+            <li class="nav-item"  sec:authorize="hasAuthority('ADMIN')">
+                <a style="font-size: 20px" class="nav-link" th:href="@{/user}">Accounts</a>
             </li>
         </ul>
 
-        <div class="navbar-text" sec:authorize="isAuthenticated()">
-            <a sec:authentication="principal.username" th:href="@{/profile}">Username</a>
+        <div class="navbar-text mt-1" sec:authorize="isAuthenticated()">
+            <a style="font-size: 20px" sec:authentication="principal.username" th:href="@{/profile}">Username</a>
         </div>
 
         <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout">
+                <input style="font-size: 19px" class="btn btn-light" type="submit" value="Logout">
             </form>
         </div>
     </div>
@@ -50,54 +50,57 @@
 <div class="container mt-5">
     <!--Registration Form-->
     <div style="text-align: center">
-        <h1>Registration Page</h1>
+        <h3>Register here</h3>
     </div>
-    <div style="margin-bottom: 5px; color: darkred; font-weight: bold" th:if="${usernameMessage}">
-        <span th:text="${usernameMessage}"></span>
+    <div>
+        <div style="margin-bottom: 5px; color: darkred; font-weight: bold" th:if="${usernameMessage}">
+            <span th:text="${usernameMessage}"></span>
+        </div>
+        <form th:action="@{/registration}" method="post" th:object="${user}">
+            <div class="form-group">
+                <label style="font-size: 18px" for="username">Username:</label>
+                <div class="col-sm-6">
+                    <input th:class="${usernameError} ? 'form-control is-invalid' : 'form-control'" type="text" name="username" id="username" placeholder="Введите логин"
+                           th:field="*{username}">
+                    <div class="invalid-feedback" th:if="${usernameError}">
+                        <span th:text="${usernameError}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="font-size: 18px" for="email">Email:</label>
+                <div class="col-sm-6">
+                    <input th:class="${emailError} ? 'form-control is-invalid' : 'form-control'" type="email" name="email" id="email" placeholder="Введите почту"
+                           th:field="*{email}">
+                    <div class="invalid-feedback" th:if="${emailError}">
+                        <span th:text="${emailError}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="font-size: 18px" for="password">Password:</label>
+                <div class="col-sm-6">
+                    <input th:class="${passwordError} ? 'form-control is-invalid' : 'form-control'" type="password" name="password" id="password" placeholder="Введите пароль"
+                           th:field="*{password}">
+                    <div class="invalid-feedback" th:if="${passwordError}">
+                        <span th:text="${passwordError}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="g-recaptcha" data-sitekey="6LcXGhEgAAAAAGfvAIzARgnUeacrR3uS92dY5-Hr"></div>
+                <div th:if="${captchaError}" class="alert alert-danger" role="alert">
+                    <span th:text="${captchaError}"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-1">Зарегистрироваться</button>
+        </form>
+        <span>Already have account? Log in </span>
+        <a th:href="@{/login}">here</a>
+        <span>.</span>
+        <!--------------------->
+
     </div>
-    <form th:action="@{/registration}" method="post" th:object="${user}">
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <div class="col-sm-6">
-                <input th:class="${usernameError} ? 'form-control is-invalid' : 'form-control'" type="text" name="username" id="username" placeholder="Введите логин"
-                       th:field="*{username}">
-                <div class="invalid-feedback" th:if="${usernameError}">
-                    <span th:text="${usernameError}"></span>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <div class="col-sm-6">
-                <input th:class="${emailError} ? 'form-control is-invalid' : 'form-control'" type="email" name="email" id="email" placeholder="Введите почту"
-                       th:field="*{email}">
-                <div class="invalid-feedback" th:if="${emailError}">
-                    <span th:text="${emailError}"></span>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <div class="col-sm-6">
-                <input th:class="${passwordError} ? 'form-control is-invalid' : 'form-control'" type="password" name="password" id="password" placeholder="Введите пароль"
-                       th:field="*{password}">
-                <div class="invalid-feedback" th:if="${passwordError}">
-                    <span th:text="${passwordError}"></span>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="g-recaptcha" data-sitekey="6LcXGhEgAAAAAGfvAIzARgnUeacrR3uS92dY5-Hr"></div>
-            <div th:if="${captchaError}" class="alert alert-danger" role="alert">
-                <span th:text="${captchaError}"></span>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-    </form>
-    <span>Already have account? Log in </span>
-    <a th:href="@{/login}">here</a>
-    <span>.</span>
-    <!--------------------->
 </div>
 
 <!--Scripts-->

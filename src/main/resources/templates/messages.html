@@ -15,7 +15,7 @@
 <body>
 <!--Navigation bar-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand">Sweater</a>
+    <a style="font-size: 25px" class="navbar-brand">Sweater</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -24,23 +24,23 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/}">Home</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/main}">Messages</a>
+                <a style="font-size: 20px" class="nav-link" th:href="@{/main}">Messages</a>
             </li>
-            <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-                <a class="nav-link" th:href="@{/user}">Users</a>
+            <li class="nav-item"  sec:authorize="hasAuthority('ADMIN')">
+                <a style="font-size: 20px" class="nav-link" th:href="@{/user}">Accounts</a>
             </li>
         </ul>
 
-        <div class="navbar-text" sec:authorize="isAuthenticated()">
-            <a sec:authentication="principal.username" th:href="@{/profile}">Username</a>
+        <div class="navbar-text mt-1" sec:authorize="isAuthenticated()">
+            <a style="font-size: 20px" sec:authentication="principal.username" th:href="@{/profile}">Username</a>
         </div>
 
         <div class="navbar-text" style="margin-left: 5px" sec:authorize="isAuthenticated()">
             <form th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout">
+                <input style="font-size: 19px" class="btn btn-light" type="submit" value="Logout">
             </form>
         </div>
     </div>
@@ -53,71 +53,118 @@
         <form method="get" th:action="@{/main}">
             <div class="row">
                 <div class="col col-sm-4 ">
-                    <input class="form-control" th:value="${filter}? ${filter}" type="text" name="filter" placeholder="Ведите хештег для пойска">
+                    <label for="filter" class="h4">Search for posts by tag</label>
+                    <input class="form-control" th:value="${filter}? ${filter}" type="text" id="filter" name="filter"
+                           placeholder="Search by tag">
                 </div>
-                <div class="col">
-                    <button type="submit" class="btn btn-primary">Найти</button>
+                <div style="margin-top: 37px" class="col-sm">
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </div>
             </div>
         </form>
     </div>
     <!------------------------>
 
-    <!--Send Message Form-->
-    <div style="padding: 2px">
-        <form th:action="@{/main}" method="post" enctype="multipart/form-data">
-            <div>
+    <div class="row">
+        <!--Send Message Form-->
+        <div class="col-sm">
+            <form th:action="@{/main}" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label for="tag" class="h4">Tag</label>
+                        <input th:class="${tagError}? 'form-control is-invalid' : 'form-control'"
+                               th:value="${message}? ${message.tag}"
+                               name="tag" type="text" id="tag" placeholder="Enter tag">
+                        <div class="invalid-feedback" th:if="${tagError}">
+                            <span th:text="${tagError}"></span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 37px" class="form-group col-sm-6">
+                        <div class="custom-file">
+                            <input type="file" name="file" id="file">
+                            <label for="file" class="custom-file-label">Choose file</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
-                    <input th:class="${textError}? 'form-control is-invalid' : 'form-control'"
-                           th:value="${message}? ${message.text}" type="text" name="text" placeholder="Введите текст">
+                    <label for="message" class="h4 ">Message</label>
+                    <textarea th:class="${textError}? 'form-control is-invalid' : 'form-control'"
+                              th:value="${message}? ${message.text}" name="text"
+                              id="message" class="form-control" rows="5" placeholder="Enter your message"
+                              required></textarea>
                     <div class="invalid-feedback" th:if="${textError}">
                         <span th:text="${textError}"></span>
                     </div>
                 </div>
+                <button type="submit" id="form-submit" class="btn btn-primary btn-lg pull-right ">Submit</button>
+            </form>
+        </div>
+        <!-- - - - - - - - - -->
 
-                <div class="form-group">
-                    <input th:class="${tagError}? 'form-control is-invalid' : 'form-control'"
-                           th:value="${message}? ${message.tag}" type="text" name="tag" placeholder="Введите хештег">
-                    <div class="invalid-feedback" th:if="${tagError}">
-                        <span th:text="${tagError}"></span>
+        <!--Information for user-->
+        <div class="col-sm">
+            <div class="float-right">
+                <h2 class="mb-5">Use Sweater with pleasure</h2>
+                <div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <img style="width: 50px; height: 50px" th:src="@{/img/images/loop.png}" alt="Loop">
+                        </div>
+                        <div class="col-sm float-right">
+                            <span style="font-size: 20px">View posts shared by people</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <img style="width: 50px; height: 50px;" th:src="@{/img/images/karandash.png}" alt="Loop">
+                        </div>
+                        <div class="col-sm float-right">
+                            <span style="font-size: 20px">Share your posts for people</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <img style="width: 50px; height: 50px" th:src="@{/img/images/galochka.png}" alt="Loop">
+                        </div>
+                        <div class="col-sm float-right">
+                            <span style="font-size: 20px">Subscribe to the author if you liked him</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="custom-file">
-                    <input type="file" name="file" id="file">
-                    <label for="file" class="custom-file-label">Choose file</label>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Отправить</button>
-
-        </form>
+        </div>
     </div>
-    <!--------------------->
+    <!-- - - - - - - - - -  -->
 
     <!--Message List-->
-    <div style="margin-top: 15px">
-        <h5 style="text-align: center">Messages:</h5>
-        <th:block th:each="message : ${messages}">
-            <div>
-                <a style="font-weight: bold; color: #133"
-                   th:text="${message.authorName}"
-                   th:href="@{/main/{authorName}(authorName=${message.authorName})}"
-                ></a>
-                <span>:</span>
-                <span th:text="${message.text}"></span>
-                <span>(</span>
-                <i th:text="${message.tag}"></i>
-                <span>)</span>
-                <div th:if="${message.filename}">
-                    <img th:src="@{/img/{filename}(filename=${message.filename})}">
+    <div class="mt-5">
+        <h5 style="text-align: center">Sweets</h5>
+        <div class="card-columns mt-5">
+            <th:block th:each="message : ${messages}">
+                <div class="card">
+                    <div th:if="${message.filename}">
+                        <img class="card-img-top" th:src="@{/img/{filename}(filename=${message.filename})}"
+                             alt="Card image cap">
+                    </div>
+                    <div th:unless="${message.filename}">
+                        <img class="card-img-top" th:src="@{/img/images/smile.jpg}" alt="Card image cap">
+                    </div>
+                    <div class="card-body">
+                        <a style="font-size: 18px; font-weight: bold; color: #133" class="card-title"
+                           th:text="${message.authorName}"
+                           th:href="@{/main/{authorName}(authorName=${message.authorName})}">Card title</a>
+                        <p class="card-text" th:text="${message.text}"></p>
+                        <div>
+                            <a class="btn btn-danger" th:if="${message.authorName} == ${user.username}"
+                               th:href="@{/main/delete-message/{messageId}(messageId = ${message.id})}">Delete</a>
+                            <span style="float: right" th:text="${message.tag}"></span>
+                        </div>
+                    </div>
                 </div>
-                    <a style="color: crimson; font-weight: bold; font-size: 12px"
-                       th:if="${message.authorName} == ${user.username}"
-                       th:href="@{/main/delete-message/{messageId}(messageId = ${message.id})}">╳</a>
-            </div>
-        </th:block>
+            </th:block>
+        </div>
     </div>
     <!---------------->
 </div>
