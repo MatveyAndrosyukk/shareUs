@@ -23,6 +23,7 @@ create table sweater_user
     email           varchar(255),
     password        varchar(255) not null,
     username        varchar(255) not null,
+    image_filename        varchar(255),
     primary key (id)
 );
 
@@ -30,13 +31,6 @@ create table sweater_user_role
 (
     user_id bigint not null,
     role_id bigint not null
-);
-
-create table sweater_user_subscribers
-(
-    channel_id    bigint not null,
-    subscriber_id bigint not null,
-    primary key (channel_id, subscriber_id)
 );
 
 create table sweater_user_subscriptions
@@ -58,15 +52,6 @@ alter table sweater_user_role
 alter table sweater_user_role
     add constraint user_role_user_fk
         foreign key (user_id) references sweater_user (id);
-
-
-alter table sweater_user_subscribers
-    add constraint user_role_subscribers_channel_fk
-        foreign key (channel_id) references sweater_user (id);
-
-alter table sweater_user_subscribers
-    add constraint user_role_subscribers_subscriber_fk
-        foreign key (subscriber_id) references sweater_user (id);
 
 alter table sweater_user_subscriptions
     add constraint user_role_subscriptions_channel_fk

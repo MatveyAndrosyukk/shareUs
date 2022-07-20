@@ -35,6 +35,8 @@ public class User implements UserDetails{
 
     private boolean active;
 
+    private String imageFilename;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "sweater_user_role",
@@ -46,15 +48,15 @@ public class User implements UserDetails{
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Message> messages;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany()
     @JoinTable(
-            name = "sweater_user_subscribers",
+            name = "sweater_user_subscriptions",
             joinColumns = @JoinColumn(name = "channel_id"),
             inverseJoinColumns = @JoinColumn(name = "subscriber_id")
     )
     private Set<User> subscribers = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany()
     @JoinTable(
             name = "sweater_user_subscriptions",
             joinColumns = @JoinColumn(name = "subscriber_id"),
@@ -62,13 +64,14 @@ public class User implements UserDetails{
     )
     private Set<User> subscriptions = new HashSet<>();
 
-    public User(String username, String password, String email, String activationCode, boolean active, Collection<Role> roles) {
+    public User(String username, String password, String email, String activationCode, boolean active, Collection<Role> roles, String imageFilename) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.activationCode = activationCode;
         this.active = active;
         this.roles = roles;
+        this.imageFilename = imageFilename;
     }
 
     public User() {
@@ -150,6 +153,14 @@ public class User implements UserDetails{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getImageFilename() {
+        return imageFilename;
+    }
+
+    public void setImageFilename(String imageFilename) {
+        this.imageFilename = imageFilename;
     }
 
     public boolean isActive() {

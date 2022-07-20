@@ -1,36 +1,53 @@
 package api.sweater.controller;
 
+import api.sweater.controller.utils.ControllerUtils;
+import api.sweater.exception.ResourceNotFoundException;
 import api.sweater.model.User;
-import api.sweater.repository.UserRepository;
-import api.sweater.service.SendMailService;
 import api.sweater.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
-    @Autowired
-    private UserRepository userRepository;
+    @Value("${upload.path}")
+    private String uploadPath;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public ProfileController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    public String getProfile(@AuthenticationPrincipal User user, Model model) {
+    public String getProfile(@AuthenticationPrincipal User currentUser, Model model) {
+        User user = userService.findById(currentUser.getId()).orElseThrow(() -> new ResourceNotFoundException("User does not exists"));
         model.addAttribute("user", user);
         return "profile";
+    }
+
+    @GetMapping("activate-email/{email}/{code}")
+    public String activateEmail(@AuthenticationPrincipal User currentUser,
+                                @PathVariable("email") String email,
+                                @PathVariable("code") String code) {
+        userService.activateEmail(currentUser, email, code);
+        return "redirect:/profile";
+    }
+
+
+    @PostMapping("changeAvatar")
+    public String changeAvatar(@AuthenticationPrincipal User currentUser,
+                               @RequestParam("file") MultipartFile file) throws IOException {
+        User user = userService.findById(currentUser.getId()).orElseThrow(() -> new ResourceNotFoundException("fd"));
+        ControllerUtils.deleteFile(uploadPath, user.getImageFilename());
+        userService.changeAvatar(file, uploadPath, currentUser);
+        return "redirect:/profile";
     }
 
     @GetMapping("edit/username")
@@ -38,21 +55,12 @@ public class ProfileController {
         return "edit-username";
     }
 
-    @GetMapping("edit/email")
-    public String getEditEmailPage() {
-        return "edit-email";
-    }
-
-    @GetMapping("edit/password")
-    public String getEditPasswordPage() {
-        return "edit-password";
-    }
 
     @PostMapping("edit/edit-username")
-    public String editUsername(@AuthenticationPrincipal User user,
+    public String editUsername(@AuthenticationPrincipal User currentUser,
                                @RequestParam("username") String username,
                                Model model) {
-        boolean isChanged = userService.editUsername(user, username);
+        boolean isChanged = userService.editUsername(currentUser, username);
         if (!isChanged) {
             model.addAttribute("usernameMessage", "This username exists!");
             return "edit-username";
@@ -60,30 +68,32 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
+    @GetMapping("edit/email")
+    public String getEditEmailPage() {
+        return "edit-email";
+    }
+
     @PostMapping("edit/edit-email")
-    public String editEmail(@AuthenticationPrincipal User user,
+    public String editEmail(@AuthenticationPrincipal User currentUser,
                             @RequestParam("email") String email,
                             Model model) {
-        userService.editEmail(user, email);
+        userService.editEmail(currentUser, email);
         model.addAttribute("emailMessage", "Check your email for the changes to take effect");
-        model.addAttribute("user", user);
+        model.addAttribute("user", currentUser);
         return "profile";
     }
 
-    @GetMapping("activate-email/{email}/{code}")
-    public String activateEmail(@AuthenticationPrincipal User user,
-                                @PathVariable("email") String email,
-                                @PathVariable("code") String code) {
-        userService.activateEmail(user, email, code);
-        return "redirect:/profile";
+    @GetMapping("edit/password")
+    public String getEditPasswordPage() {
+        return "edit-password";
     }
 
     @PostMapping("edit/edit-password")
-    public String editPassword(@AuthenticationPrincipal User user,
+    public String editPassword(@AuthenticationPrincipal User currentUser,
                                @RequestParam("newPassword") String newPassword,
                                @RequestParam("repNewPassword") String repNewPassword,
                                Model model) {
-        if (userService.updatePassword(user, newPassword, repNewPassword)){
+        if (userService.updatePassword(currentUser, newPassword, repNewPassword)){
             return "redirect:/profile";
         }
         model.addAttribute("repNewPasswordError", "Passwords don't match");

@@ -12,7 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,12 +23,12 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    private final SendMailService mailService;
+    private final MailService mailService;
 
     @Value("${hostname}")
     private String hostname;
 
-    public UserService(UserRepository userRepository, SendMailService mailService) {
+    public UserService(UserRepository userRepository, MailService mailService) {
         this.userRepository = userRepository;
         this.mailService = mailService;
     }
@@ -45,7 +48,7 @@ public class UserService implements UserDetailsService {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
     }
 
-    public boolean save(User user) {
+    public boolean trySave(User user) {
         User existedUser = userRepository.findByUsername(user.getUsername());
         if (existedUser != null) {
             return false;
@@ -57,7 +60,8 @@ public class UserService implements UserDetailsService {
                 user.getEmail(),
                 UUID.randomUUID().toString(),
                 false,
-                Arrays.asList(new Role("USER")));
+                Arrays.asList(new Role("USER")),
+                user.getImageFilename());
 
         userRepository.save(saveUser);
 
@@ -146,5 +150,35 @@ public class UserService implements UserDetailsService {
         }
         return false;
 
+    }
+
+    public User findByUsername(String authorName) {
+        return userRepository.findByUsername(authorName);
+    }
+
+    public Optional<User> findById(Long id) {
+
+        return userRepository.findById(id);
+    }
+
+    public void save(User user){
+        userRepository.save(user);
+    }
+
+    public void changeAvatar(MultipartFile file, String uploadPath, User user) throws IOException {
+        if (file != null && !file.getOriginalFilename().isEmpty()){
+            File uploadDir = new File(uploadPath + "/profile-images");
+            if (!uploadDir.exists()){
+                uploadDir.mkdir();
+            }
+            String fileName = UUID.randomUUID() + "." + file.getOriginalFilename();
+            file.transferTo(new File(uploadPath + "/profile-images/" + fileName));
+            user.setImageFilename(fileName);
+            save(user);
+        }
+    }
+
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 }
