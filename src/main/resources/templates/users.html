@@ -60,9 +60,9 @@
                 </td>
                 <td>
                     <a class="btn btn-info" th:href="@{'/user/' + ${user.id}}">Edit</a>
-                    <a class="btn btn-danger" th:href="@{'/user/delete/' + ${user.id}}">Delete</a>
+                    <a class="btn btn-danger" th:href="@{'/user?u=' + ${user.id}}">Delete</a>
                     <span class="float-right h5 text-danger"
-                          th:text="(${checkedUser} and ${checkedUser.id} == ${user.id})? ${unableToDelete}"></span>
+                          th:text="(${userToDelete} and ${userToDelete.id} == ${user.id})? ${deleteMessage}"></span>
                 </td>
             </tr>
         </th:block>

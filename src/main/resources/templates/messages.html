@@ -26,7 +26,7 @@
             <li class="nav-item">
                 <a style="font-size: 20px" class="nav-link" th:href="@{/main}">Messages</a>
             </li>
-            <li class="nav-item"  sec:authorize="hasAuthority('ADMIN')">
+            <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
                 <a style="font-size: 20px" class="nav-link" th:href="@{/user}">Accounts</a>
             </li>
         </ul>
@@ -142,8 +142,11 @@
                            th:href="@{/main/{authorName}(authorName=${message.authorName})}">Card title</a>
                         <p class="card-text" th:text="${message.text}"></p>
                         <div>
-                            <a class="btn btn-danger" th:if="${message.authorName} == ${user.username}"
-                               th:href="@{/main/delete-message/{messageId}(messageId = ${message.id})}">Delete</a>
+                            <form method="post"
+                                  th:action="@{/main/delete-message/{messageId}(messageId = ${message.id})}"
+                                  th:if="${message.authorName} == ${user.username}">
+                                <input class="btn btn-danger" type="submit" value="Delete"/>
+                            </form>
                             <span style="float: right" th:text="${message.tag}"></span>
                         </div>
                     </div>

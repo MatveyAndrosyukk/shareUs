@@ -2,34 +2,39 @@ package api.sweater.controller;
 
 import api.sweater.model.Role;
 import api.sweater.model.User;
-import api.sweater.repository.UserRepository;
-import api.sweater.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import api.sweater.service.impl.UserServiceImpl;
+import api.sweater.service.interfaces.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public String userList(@AuthenticationPrincipal User currentUser, Model model) {
+    public String userList(@AuthenticationPrincipal User currentUser,
+                           @RequestParam(required = false) Long u,
+                           Model model) {
+        if (u != null) {
+            User user = userService.findById(u);
+            if (user.getRoles().contains(new Role("ADMIN"))) {
+                model.addAttribute("deleteMessage", "You can't delete user with role 'ADMIN'");
+                model.addAttribute("userToDelete", user);
+            }else {
+                userService.deleteById(user.getId());
+            }
+        }
         model.addAttribute("users", userService.findAll());
         model.addAttribute("user", currentUser);
         return "users";
@@ -42,23 +47,6 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.allRoles);
         return "edit-user";
-    }
-
-    @GetMapping("/delete/{user}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String removeUser(@AuthenticationPrincipal User currentUser,
-                             @PathVariable User user,
-                             Model model) {
-        if (user.getRoles().contains(new Role("ADMIN"))) {
-            model.addAttribute("unableToDelete", "You can't delete user with role 'ADMIN'");
-            model.addAttribute("checkedUser", user);
-            model.addAttribute("users", userService.findAll());
-            model.addAttribute("user", currentUser);
-            return "users";
-        }
-        userService.deleteById(user.getId());
-
-        return "redirect:/user";
     }
 
     @GetMapping("/subscribe/{author}")

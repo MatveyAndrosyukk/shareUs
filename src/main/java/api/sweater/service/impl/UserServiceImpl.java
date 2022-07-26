@@ -1,8 +1,10 @@
-package api.sweater.service;
+package api.sweater.service.impl;
 
+import api.sweater.exception.ResourceNotFoundException;
 import api.sweater.model.Role;
 import api.sweater.model.User;
-import api.sweater.repository.UserRepository;
+import api.sweater.repository.interfaces.UserRepository;
+import api.sweater.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,17 +22,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService, UserService {
+
+    @Value("${upload.path}")
+    private String uploadPath;
+
     private final UserRepository userRepository;
 
-    private final MailService mailService;
+    private final MailServiceImpl mailServiceImpl;
 
     @Value("${hostname}")
     private String hostname;
 
-    public UserService(UserRepository userRepository, MailService mailService) {
+    public UserServiceImpl(UserRepository userRepository, MailServiceImpl mailServiceImpl) {
         this.userRepository = userRepository;
-        this.mailService = mailService;
+        this.mailServiceImpl = mailServiceImpl;
     }
 
     @Override
@@ -71,7 +77,7 @@ public class UserService implements UserDetailsService {
                     saveUser.getUsername(),
                     hostname,
                     saveUser.getActivationCode());
-            mailService.send(saveUser.getEmail(), "Activation Code", message);
+            mailServiceImpl.send(saveUser.getEmail(), "Activation Code", message);
         }
 
         return true;
@@ -129,7 +135,7 @@ public class UserService implements UserDetailsService {
                 user.getUsername(),
                 email,
                 user.getActivationCode());
-        mailService.send(email, "Activation Code", message);
+        mailServiceImpl.send(email, "Activation Code", message);
     }
 
     public void activateEmail(User user, String email, String code) {
@@ -156,16 +162,16 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(authorName);
     }
 
-    public Optional<User> findById(Long id) {
+    public User findById(Long id) {
 
-        return userRepository.findById(id);
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not exists!"));
     }
 
     public void save(User user){
         userRepository.save(user);
     }
 
-    public void changeAvatar(MultipartFile file, String uploadPath, User user) throws IOException {
+    public void changeAvatar(MultipartFile file, User user) throws IOException {
         if (file != null && !file.getOriginalFilename().isEmpty()){
             File uploadDir = new File(uploadPath + "/profile-images");
             if (!uploadDir.exists()){

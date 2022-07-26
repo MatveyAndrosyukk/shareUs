@@ -1,10 +1,12 @@
 package api.sweater.controller;
 
-import api.sweater.controller.utils.ControllerUtils;
 import api.sweater.model.User;
 import api.sweater.model.dto.CaptchaResponseDto;
-import api.sweater.service.CaptchaService;
-import api.sweater.service.UserService;
+import api.sweater.service.impl.CaptchaServiceImpl;
+import api.sweater.service.impl.UserServiceImpl;
+import api.sweater.service.interfaces.CaptchaService;
+import api.sweater.service.interfaces.UserService;
+import api.sweater.service.util.BindingResultUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +21,7 @@ public class RegistrationController {
 
     private final CaptchaService captchaService;
 
-    public RegistrationController(UserService userService, CaptchaService captchaService) {
+    public RegistrationController(UserServiceImpl userService, CaptchaServiceImpl captchaService) {
         this.userService = userService;
         this.captchaService = captchaService;
     }
@@ -36,7 +38,7 @@ public class RegistrationController {
                                BindingResult bindingResult,
                                Model model){
         if (bindingResult.hasErrors()){
-            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+            Map<String, String> errors = BindingResultUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
             return "registration";
         }

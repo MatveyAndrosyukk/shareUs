@@ -1,4 +1,4 @@
-package api.sweater.repository;
+package api.sweater.repository.interfaces;
 
 import api.sweater.model.Message;
 import api.sweater.model.User;

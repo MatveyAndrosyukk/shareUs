@@ -1,18 +1,19 @@
-package api.sweater.service;
+package api.sweater.service.impl;
 
 import api.sweater.model.Message;
 import api.sweater.model.User;
-import api.sweater.repository.MessageRepository;
+import api.sweater.repository.interfaces.MessageRepository;
+import api.sweater.service.interfaces.MessageService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class MessageService {
+public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
 
-    public MessageService(MessageRepository messageRepository) {
+    public MessageServiceImpl(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
 

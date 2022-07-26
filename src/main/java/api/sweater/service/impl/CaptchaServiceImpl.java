@@ -1,6 +1,7 @@
-package api.sweater.service;
+package api.sweater.service.impl;
 
 import api.sweater.model.dto.CaptchaResponseDto;
+import api.sweater.service.interfaces.CaptchaService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -8,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 @Service
-public class CaptchaService {
+public class CaptchaServiceImpl implements CaptchaService {
     @Value("${recaptcha.secret}")
     private String recaptchaSecret;
 
@@ -17,7 +18,7 @@ public class CaptchaService {
 
     private final RestTemplate restTemplate;
 
-    public CaptchaService(RestTemplate restTemplate) {
+    public CaptchaServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

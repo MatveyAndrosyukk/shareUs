@@ -1,9 +1,9 @@
 package api.sweater.controller;
 
-import api.sweater.controller.utils.ControllerUtils;
-import api.sweater.exception.ResourceNotFoundException;
 import api.sweater.model.User;
-import api.sweater.service.UserService;
+import api.sweater.service.impl.UserServiceImpl;
+import api.sweater.service.interfaces.UserService;
+import api.sweater.service.util.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,18 +16,19 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
+
     @Value("${upload.path}")
     private String uploadPath;
 
     private final UserService userService;
 
-    public ProfileController(UserService userService) {
+    public ProfileController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public String getProfile(@AuthenticationPrincipal User currentUser, Model model) {
-        User user = userService.findById(currentUser.getId()).orElseThrow(() -> new ResourceNotFoundException("User does not exists"));
+    public String getProfilePage(@AuthenticationPrincipal User currentUser, Model model) {
+        User user = userService.findById(currentUser.getId());
         model.addAttribute("user", user);
         return "profile";
     }
@@ -44,15 +45,21 @@ public class ProfileController {
     @PostMapping("changeAvatar")
     public String changeAvatar(@AuthenticationPrincipal User currentUser,
                                @RequestParam("file") MultipartFile file) throws IOException {
-        User user = userService.findById(currentUser.getId()).orElseThrow(() -> new ResourceNotFoundException("fd"));
-        ControllerUtils.deleteFile(uploadPath, user.getImageFilename());
-        userService.changeAvatar(file, uploadPath, currentUser);
+        User user = userService.findById(currentUser.getId());
+        FileUtils.deleteFile(user.getImageFilename(), uploadPath);
+        userService.changeAvatar(file, currentUser);
         return "redirect:/profile";
     }
 
-    @GetMapping("edit/username")
-    public String getEditUsernamePage() {
-        return "edit-username";
+    @GetMapping("edit")
+    public String getEditPage(@RequestParam() String e)
+    {
+        return switch (e) {
+            case "username" -> "edit-username";
+            case "email" -> "edit-email";
+            case "password" -> "edit-password";
+            default -> "redirect:/profile";
+        };
     }
 
 
@@ -68,11 +75,6 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
-    @GetMapping("edit/email")
-    public String getEditEmailPage() {
-        return "edit-email";
-    }
-
     @PostMapping("edit/edit-email")
     public String editEmail(@AuthenticationPrincipal User currentUser,
                             @RequestParam("email") String email,
@@ -81,11 +83,6 @@ public class ProfileController {
         model.addAttribute("emailMessage", "Check your email for the changes to take effect");
         model.addAttribute("user", currentUser);
         return "profile";
-    }
-
-    @GetMapping("edit/password")
-    public String getEditPasswordPage() {
-        return "edit-password";
     }
 
     @PostMapping("edit/edit-password")

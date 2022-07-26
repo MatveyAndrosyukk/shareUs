@@ -55,7 +55,7 @@
 
                 <img th:unless="${author.imageFilename}" style="width: 150px; height: 150px"
                      class="rounded-circle mx-auto d-block"
-                     th:src="@{/img/images/noavatar.jpg}"/>
+                     th:src="@{/images/noavatar.jpg}"/>
             </div>
         </div>
         <div class="row mt-3">
@@ -99,7 +99,7 @@
                                  alt="Card image cap"/>
                         </div>
                         <div th:unless="${message.filename}">
-                            <img class="card-img-top" th:src="@{/img/images/smile.jpg}" alt="Card image cap"/>
+                            <img class="card-img-top" th:src="@{/images/smile.jpg}" alt="Card image cap"/>
                         </div>
                         <div class="card-body">
                             <a style="font-size: 20px; font-weight: bold; color: #133" class="card-title"
@@ -107,8 +107,11 @@
                                th:href="@{/main/{authorName}(authorName=${message.authorName})}">Card title</a>
                             <p class="card-text" th:text="${message.text}"></p>
                             <div>
-                                <a class="btn btn-danger" th:if="${message.authorName} == ${currentUser.username}"
-                                   th:href="@{/main/delete-message/{messageId}(messageId = ${message.id})}">Delete</a>
+                                <form method="post"
+                                      th:action="@{/main/delete-message/{messageId}(messageId = ${message.id})}"
+                                      th:if="${message.authorName} == ${currentUser.username}">
+                                    <input class="btn btn-danger" type="submit" value="Delete"/>
+                                </form>
                                 <span style="float: right" th:text="${message.tag}"></span>
                             </div>
                         </div>
