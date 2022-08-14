@@ -3,7 +3,6 @@ package api.sweater.service.util;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 import java.util.stream.Collector;

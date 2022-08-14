@@ -24,8 +24,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     public CaptchaResponseDto getCaptchaResponse(String captchaResponse) {
         String url = String.format(CAPTCHA_URL, recaptchaSecret, captchaResponse);
-        CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
 
-        return response;
+        return restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
     }
 }

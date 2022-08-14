@@ -5,7 +5,7 @@ services:
     hostname: api_service
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - mysql_db
   mysql_db:
@@ -13,7 +13,7 @@ services:
     hostname: mysql_db
     restart: always
     ports:
-      - 3307:3306
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: sweater_db
       MYSQL_USER: user228

@@ -6,8 +6,6 @@ import api.sweater.model.User;
 import api.sweater.repository.interfaces.UserRepository;
 import api.sweater.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -50,10 +50,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return findUser;
     }
 
-    public Collection<GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
-    }
-
     public boolean trySave(User user) {
         User existedUser = userRepository.findByUsername(user.getUsername());
         if (existedUser != null) {
@@ -66,14 +62,14 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 user.getEmail(),
                 UUID.randomUUID().toString(),
                 false,
-                Arrays.asList(new Role("USER")),
+                List.of(new Role("USER")),
                 user.getImageFilename());
 
         userRepository.save(saveUser);
 
         if (!StringUtils.isEmpty(saveUser.getEmail())) {
             String message = String.format("Hello, %s, \n" +
-                            "Welcome to Sweater. Please, visit next link: http://%s/activate/%s",
+                            "Welcome to Sweater. Please, visit next link: https://%s/activate/%s",
                     saveUser.getUsername(),
                     hostname,
                     saveUser.getActivationCode());
@@ -172,7 +168,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     public void changeAvatar(MultipartFile file, User user) throws IOException {
-        if (file != null && !file.getOriginalFilename().isEmpty()){
+        if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()){
             File uploadDir = new File(uploadPath + "/profile-images");
             if (!uploadDir.exists()){
                 uploadDir.mkdir();

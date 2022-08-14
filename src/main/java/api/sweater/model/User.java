@@ -1,11 +1,16 @@
 package api.sweater.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -13,8 +18,13 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sweater_user")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class User implements UserDetails{
 
+    @Serial
     private final static long serialVersionUID = 1L;
 
     @Id
@@ -46,6 +56,7 @@ public class User implements UserDetails{
     private Collection<Role> roles;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Collection<Message> messages;
 
     @ManyToMany(fetch=FetchType.EAGER)
@@ -72,9 +83,6 @@ public class User implements UserDetails{
         this.active = active;
         this.roles = roles;
         this.imageFilename = imageFilename;
-    }
-
-    public User() {
     }
 
     public boolean isAdmin(){
@@ -129,104 +137,5 @@ public class User implements UserDetails{
     @Override
     public int hashCode() {
         return Objects.hash(getId());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getImageFilename() {
-        return imageFilename;
-    }
-
-    public void setImageFilename(String imageFilename) {
-        this.imageFilename = imageFilename;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getActivationCode() {
-        return activationCode;
-    }
-
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
-    }
-
-    public Collection<Message> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(Collection<Message> messages) {
-        this.messages = messages;
-    }
-
-    public Set<User> getSubscribers() {
-        return subscribers;
-    }
-
-    public void setSubscribers(Set<User> subscribers) {
-        this.subscribers = subscribers;
-    }
-
-    public Set<User> getSubscriptions() {
-        return subscriptions;
-    }
-
-    public void setSubscriptions(Set<User> subscriptions) {
-        this.subscriptions = subscriptions;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", active=" + active +
-                ", roles=" + roles +
-                '}';
     }
 }

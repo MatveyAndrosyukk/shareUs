@@ -4,6 +4,8 @@ import api.sweater.model.Message;
 import api.sweater.model.User;
 import api.sweater.repository.interfaces.MessageRepository;
 import api.sweater.service.interfaces.MessageService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,24 +19,8 @@ public class MessageServiceImpl implements MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public void findFilteredMessages(String filter, List<Message> messages) {
-        Iterable<Message> allMessages = messageRepository.findAll();
-        String[] tags = filter.split(" ");
-        for (Message message : allMessages) {
-            String[] messageTags = message.getTag().split(" ");
-            for (String tag :
-                    tags) {
-                for (String messageTag : messageTags) {
-                    if (messageTag.equals(tag)) {
-                        messages.add(message);
-                    }
-                }
-            }
-        }
-    }
-
-    public List<Message> findAll(){
-        return (List<Message>) messageRepository.findAll();
+    public Page<Message> findAllPageable(Pageable pageable){
+        return messageRepository.findAll(pageable);
     }
 
     public void save(Message message) {
@@ -51,5 +37,10 @@ public class MessageServiceImpl implements MessageService {
 
     public Optional<Message> findById(Long id) {
         return messageRepository.findById(id);
+    }
+
+    @Override
+    public Page<Message> findByTag(String tag, Pageable pageable) {
+        return messageRepository.findByTag(tag, pageable);
     }
 }

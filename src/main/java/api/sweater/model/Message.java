@@ -1,5 +1,6 @@
 package api.sweater.model;
 
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -8,6 +9,11 @@ import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "sweater_message")
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,61 +39,7 @@ public class Message {
         this.tag = tag;
     }
 
-    public Message() {
-    }
-
     public String getAuthorName(){
         return author != null ? author.getUsername() : "<none>";
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", tag='" + tag + '\'' +
-                ", filename='" + filename + '\'' +
-                ", author=" + author +
-                '}';
     }
 }
