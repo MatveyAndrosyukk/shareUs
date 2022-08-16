@@ -1,4 +1,4 @@
-package api.sweater;
+package api.sweater.module_tests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ public class LoginTest {
 
     @Test
     public void accessDeniedTest() throws Exception{
-        this.mockMvc.perform(get("/main"))
+        this.mockMvc.perform(get("/messages"))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("http://localhost/login"));

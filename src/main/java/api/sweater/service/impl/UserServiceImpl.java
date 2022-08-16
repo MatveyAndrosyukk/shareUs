@@ -23,16 +23,12 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
-
     @Value("${upload.path}")
     private String uploadPath;
-
-    private final UserRepository userRepository;
-
-    private final MailServiceImpl mailServiceImpl;
-
     @Value("${hostname}")
     private String hostname;
+    private final UserRepository userRepository;
+    private final MailServiceImpl mailServiceImpl;
 
     public UserServiceImpl(UserRepository userRepository, MailServiceImpl mailServiceImpl) {
         this.userRepository = userRepository;
@@ -50,33 +46,51 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return findUser;
     }
 
+
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public User findById(Long id) {
+
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not exists!"));
+    }
+
+    public User findByUsername(String authorName) {
+        return userRepository.findByUsername(authorName);
+    }
+
+    public void save(User user){
+        userRepository.save(user);
+    }
+
     public boolean trySave(User user) {
         User existedUser = userRepository.findByUsername(user.getUsername());
         if (existedUser != null) {
             return false;
         }
 
-        User saveUser = new User(
-                user.getUsername(),
-                new BCryptPasswordEncoder().encode(user.getPassword()),
-                user.getEmail(),
-                UUID.randomUUID().toString(),
-                false,
-                List.of(new Role("USER")),
-                user.getImageFilename());
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setActivationCode(UUID.randomUUID().toString());
+        user.setActive(false);
+        user.setRoles(List.of(new Role("USER")));
 
-        userRepository.save(saveUser);
+        userRepository.save(user);
 
-        if (!StringUtils.isEmpty(saveUser.getEmail())) {
+        if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format("Hello, %s, \n" +
                             "Welcome to Sweater. Please, visit next link: https://%s/activate/%s",
-                    saveUser.getUsername(),
+                    user.getUsername(),
                     hostname,
-                    saveUser.getActivationCode());
-            mailServiceImpl.send(saveUser.getEmail(), "Activation Code", message);
+                    user.getActivationCode());
+            mailServiceImpl.send(user.getEmail(), "Activation Code", message);
         }
 
         return true;
+    }
+
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 
     public boolean activateUser(String code) {
@@ -93,8 +107,14 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return true;
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public void activateEmail(User user, String email, String code) {
+        User userByActivationCode = userRepository.findByActivationCode(code);
+        if (userByActivationCode == null) {
+            return;
+        }
+        user.setEmail(email);
+        user.setActivationCode(null);
+        userRepository.save(user);
     }
 
     public void editUser(Map<String, String> form, Long id, String username, boolean active) {
@@ -134,17 +154,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         mailServiceImpl.send(email, "Activation Code", message);
     }
 
-    public void activateEmail(User user, String email, String code) {
-        User userByActivationCode = userRepository.findByActivationCode(code);
-        if (userByActivationCode == null) {
-            return;
-        }
-        user.setEmail(email);
-        user.setActivationCode(null);
-        userRepository.save(user);
-    }
-
-    public boolean updatePassword(User user, String newPassword, String repNewPassword) {
+    public boolean editPassword(User user, String newPassword, String repNewPassword) {
         if (newPassword.equals(repNewPassword)) {
             user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
             userRepository.save(user);
@@ -154,20 +164,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     }
 
-    public User findByUsername(String authorName) {
-        return userRepository.findByUsername(authorName);
-    }
-
-    public User findById(Long id) {
-
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not exists!"));
-    }
-
-    public void save(User user){
-        userRepository.save(user);
-    }
-
-    public void changeAvatar(MultipartFile file, User user) throws IOException {
+    public void editAvatar(MultipartFile file, User user) throws IOException {
         if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()){
             File uploadDir = new File(uploadPath + "/profile-images");
             if (!uploadDir.exists()){
@@ -178,9 +175,5 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             user.setImageFilename(fileName);
             save(user);
         }
-    }
-
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
     }
 }

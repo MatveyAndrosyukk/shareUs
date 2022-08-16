@@ -30,7 +30,7 @@ public interface UserService {
 
     void editEmail(User user, String email);
 
-    boolean updatePassword(User user, String newPassword, String repNewPassword);
+    boolean editPassword(User user, String newPassword, String repNewPassword);
 
-    void changeAvatar(MultipartFile file, User user) throws IOException;
+    void editAvatar(MultipartFile file, User user) throws IOException;
 }

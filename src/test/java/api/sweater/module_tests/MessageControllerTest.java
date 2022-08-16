@@ -1,4 +1,4 @@
-package api.sweater;
+package api.sweater.module_tests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +27,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("/application-test.properties")
 @Sql(value = {"/sql/create_user_before.sql", "/sql/create_message_before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/create_message_after.sql", "/sql/create_user_after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class MainControllerTest {
+public class MessageControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     public void mainPageTest() throws Exception {
-        this.mockMvc.perform(get("/main"))
+        this.mockMvc.perform(get("/messages"))
                 .andDo(print())
                 .andExpect(authenticated())
                 .andExpect(xpath("//*[@id='navbarSupportedContent']/div[1]/a").string("admin"));
@@ -41,7 +41,7 @@ public class MainControllerTest {
 
     @Test
     public void messageListTest() throws Exception {
-        this.mockMvc.perform(get("/main"))
+        this.mockMvc.perform(get("/messages"))
                 .andDo(print())
                 .andExpect(authenticated())
                 .andExpect(xpath("//div[@id='message-cards']/div").nodeCount(3));
@@ -49,7 +49,7 @@ public class MainControllerTest {
 
     @Test
     public void filterMessagesTest() throws Exception {
-        this.mockMvc.perform(get("/main").param("filter", "#one"))
+        this.mockMvc.perform(get("/messages").param("filter", "#one"))
                 .andDo(print())
                 .andExpect(authenticated())
                 .andExpect(xpath("//div[@id='message-cards']/div").nodeCount(1));
@@ -57,7 +57,7 @@ public class MainControllerTest {
 
     @Test
     public void addMessageToList() throws Exception {
-        MockHttpServletRequestBuilder multipart = multipart("/main")
+        MockHttpServletRequestBuilder multipart = multipart("/messages")
                 .file("file", "123".getBytes())
                 .param("text", "TEXT")
                 .param("tag", "#TAG")
@@ -72,7 +72,7 @@ public class MainControllerTest {
 
     @Test
     public void incorrectTagError() throws Exception {
-        MockHttpServletRequestBuilder multipart = multipart("/main")
+        MockHttpServletRequestBuilder multipart = multipart("/messages")
                 .file("file", "123".getBytes())
                 .param("text", "TEXT")
                 .param("tag", "TAG")

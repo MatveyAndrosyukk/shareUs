@@ -6,19 +6,23 @@ import api.sweater.service.impl.CaptchaServiceImpl;
 import api.sweater.service.impl.UserServiceImpl;
 import api.sweater.service.interfaces.CaptchaService;
 import api.sweater.service.interfaces.UserService;
-import api.sweater.service.util.BindingResultUtils;
+import api.sweater.util.BindingResultUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
 public class RegistrationController {
+    private static final String USER_ACTIVATED = "User successfully activated";
+    private static final String ACTIVATION_CODE_NOT_FOUND = "Activation code is not found!";
+    private static final String USER_EXISTS = "User with this username exists, try another username!";
+    private static final String CAPTCHA_NOT_FILLED = "Fill captcha";
     private final UserService userService;
-
     private final CaptchaService captchaService;
 
     public RegistrationController(UserServiceImpl userService, CaptchaServiceImpl captchaService) {
@@ -27,9 +31,10 @@ public class RegistrationController {
     }
 
     @GetMapping("/registration")
-    public String registrationPage(Model model){
-        model.addAttribute("user", new User());
-        return "registration";
+    public ModelAndView registrationPage(){
+        ModelAndView modelAndView = new ModelAndView("registration-page");
+        modelAndView.addObject("user", new User());
+        return modelAndView;
     }
 
     @PostMapping("/registration")
@@ -39,30 +44,35 @@ public class RegistrationController {
                                Model model){
         if (bindingResult.hasErrors()){
             Map<String, String> errors = BindingResultUtils.getErrors(bindingResult);
+
             model.mergeAttributes(errors);
-            return "registration";
+            return "registration-page";
         }
+
         CaptchaResponseDto response = captchaService.getCaptchaResponse(captchaResponse);
         if (!response.isSuccess()){
-            model.addAttribute("captchaError", "Fill captcha");
+            model.addAttribute("captchaError", CAPTCHA_NOT_FILLED);
         }
 
         if (!userService.trySave(user)){
-            model.addAttribute("usernameMessage", "User with this username exists, try another username!");
-            return "registration";
+            model.addAttribute("usernameMessage", USER_EXISTS);
+            return "registration-page";
         }
 
         return "redirect:/login";
     }
 
     @GetMapping("/activate/{code}")
-    public String activate(@PathVariable String code, Model model){
+    public ModelAndView activate(@PathVariable String code){
+        ModelAndView modelAndView = new ModelAndView("login-page");
+
         boolean isActivated = userService.activateUser(code);
         if (isActivated){
-            model.addAttribute("message", "User successfully activated");
+            modelAndView.addObject("message", USER_ACTIVATED);
         }else {
-            model.addAttribute("message", "Activation code is not found!");
+            modelAndView.addObject("message", ACTIVATION_CODE_NOT_FOUND);
         }
-        return "login";
+
+        return modelAndView;
     }
 }

@@ -6,6 +6,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "sweater_message")
@@ -33,13 +35,18 @@ public class Message {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User author;
 
+    @ManyToMany
+    @JoinTable(
+            name = "message_likes",
+            joinColumns = { @JoinColumn(name = "message_id")},
+            inverseJoinColumns = { @JoinColumn(name = "user_id")}
+    )
+    @ToString.Exclude
+    private Set<User> likes = new HashSet<>();
+
     public Message(String text, String tag, User user) {
         this.author = user;
         this.text = text;
         this.tag = tag;
-    }
-
-    public String getAuthorName(){
-        return author != null ? author.getUsername() : "<none>";
     }
 }

@@ -1,4 +1,4 @@
-package api.sweater.service.util;
+package api.sweater.util;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;

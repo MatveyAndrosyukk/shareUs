@@ -12,10 +12,8 @@ import java.util.Collections;
 public class CaptchaServiceImpl implements CaptchaService {
     @Value("${recaptcha.secret}")
     private String recaptchaSecret;
-
     @Value("https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s")
     private String CAPTCHA_URL;
-
     private final RestTemplate restTemplate;
 
     public CaptchaServiceImpl(RestTemplate restTemplate) {
