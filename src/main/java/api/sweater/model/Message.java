@@ -6,6 +6,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,15 +23,15 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Please, fill the message")
-    @Length(max = 255, message = "Message too long, max 255 symbols")
+    @Length(max = 3000, message = "Message is too long")
     private String text;
 
-    @Pattern(regexp = "#.+", message = "Enter #text no longer 40 symbols")
-    @Length(max = 40, message = "Enter #text no longer 40 symbols")
+    @Pattern(regexp = "#.+", message = "Enter tag correctly")
+    @Length(max = 40, message = "Tag is too long")
     private String tag;
 
-    private String filename;
+    @Lob
+    private byte[] image;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -48,5 +50,14 @@ public class Message {
         this.author = user;
         this.text = text;
         this.tag = tag;
+    }
+
+    public String getImage() {
+        if (this.image == null){
+            return null;
+        }else {
+            byte[] encode = Base64.getEncoder().encode(this.image);
+            return new String(encode, StandardCharsets.UTF_8);
+        }
     }
 }

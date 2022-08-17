@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,8 +36,9 @@ public class MessageServiceImpl implements MessageService {
         return messageRepository.findAll(pageable, user);
     }
 
-    public Optional<Message> findById(Long id) {
-        return messageRepository.findById(id);
+    @Override
+    public List<Message> findAll() {
+        return messageRepository.findAll();
     }
 
     @Override

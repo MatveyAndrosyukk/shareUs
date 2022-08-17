@@ -14,17 +14,17 @@ public class MessageDto {
     private String text;
     private String tag;
     private User author;
-    private String filename;
+    private String image;
     private Long likes;
     private Boolean meLiked;
 
     public MessageDto(Message message, Long likes, Boolean meLiked) {
-        this.id = message.getId();
-        this.text = message.getText();
-        this.tag = message.getTag();
-        this.author = message.getAuthor();
-        this.filename = message.getFilename();
-        this.likes = likes;
-        this.meLiked = meLiked;
+            this.id = message.getId();
+            this.text = message.getText();
+            this.tag = message.getTag();
+            this.author = message.getAuthor();
+            this.image = message.getImage();
+            this.likes = likes;
+            this.meLiked = meLiked;
     }
 }

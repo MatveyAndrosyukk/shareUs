@@ -11,10 +11,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serial;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Entity
 @Table(name = "sweater_user")
@@ -45,7 +43,8 @@ public class User implements UserDetails{
 
     private boolean active;
 
-    private String imageFilename;
+    @Lob
+    private byte[] avatar;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -75,14 +74,14 @@ public class User implements UserDetails{
     )
     private Set<User> subscriptions = new HashSet<>();
 
-    public User(String username, String password, String email, String activationCode, boolean active, Collection<Role> roles, String imageFilename) {
+    public User(String username, String password, String email, String activationCode, boolean active, Collection<Role> roles, byte[] avatar) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.activationCode = activationCode;
         this.active = active;
         this.roles = roles;
-        this.imageFilename = imageFilename;
+        this.avatar = avatar;
     }
 
     public boolean isAdmin(){
@@ -137,5 +136,14 @@ public class User implements UserDetails{
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public String getAvatar() {
+        if (this.avatar == null){
+            return null;
+        }else {
+            byte[] encode = Base64.getEncoder().encode(this.avatar);
+            return new String(encode, StandardCharsets.UTF_8);
+        }
     }
 }

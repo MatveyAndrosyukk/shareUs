@@ -14,20 +14,23 @@ import java.util.List;
 public interface MessageRepository extends PagingAndSortingRepository<Message, Long> {
     @Query("SELECT NEW api.sweater.model.dto.MessageDto(m, COUNT(ml), sum(CASE WHEN ml = :user THEN 1 ELSE 0 END) > 0) " +
             "FROM Message m LEFT JOIN m.likes ml " +
-            "GROUP BY m")
+            "GROUP BY m " +
+            "ORDER BY m.id DESC")
     Page<MessageDto> findAll(Pageable pageable, @Param("user") User user);
 
     @Query("SELECT NEW api.sweater.model.dto.MessageDto(m, COUNT(ml), sum(CASE WHEN ml = :user THEN 1 ELSE 0 END) > 0) " +
             "FROM Message m LEFT JOIN m.likes ml " +
             "WHERE m.author = :author " +
-            "GROUP BY m")
+            "GROUP BY m " +
+            "ORDER BY m.id DESC")
     Page<MessageDto> findByAuthor(@Param("author") User author, @Param("user") User user, Pageable pageable);
 
     @Query("SELECT NEW api.sweater.model.dto.MessageDto(m, COUNT(ml), sum(CASE WHEN ml = :user THEN 1 ELSE 0 END) > 0) " +
             "FROM Message m LEFT JOIN m.likes ml " +
             "WHERE m.tag = :tag " +
-            "GROUP BY m")
+            "GROUP BY m " +
+            "ORDER BY m.id DESC")
     Page<MessageDto> findByTag(@Param("tag") String tag, @Param("user") User user, Pageable pageable);
 
-
+    List<Message> findAll();
 }

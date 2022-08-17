@@ -3,8 +3,6 @@ package api.sweater.controller;
 import api.sweater.model.User;
 import api.sweater.service.impl.UserServiceImpl;
 import api.sweater.service.interfaces.UserService;
-import api.sweater.util.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,13 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
+import static api.sweater.util.ControllerUtils.getByteArray;
 
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
-    @Value("${upload.path}")
-    private String uploadPath;
+    private static final String USER_EXISTS = "User with this username exists, try another username!";
+    private static final String CHANGE_EMAIL_MESSAGE = "Check your email for the changes to take effect";
+    private static final String CHANGE_PASSWORD_ERROR = "Passwords don't match";
     private final UserService userService;
 
     public ProfileController(UserServiceImpl userService) {
@@ -49,14 +48,12 @@ public class ProfileController {
 
     @PostMapping("changeAvatar")
     public ModelAndView changeAvatar(@AuthenticationPrincipal User currentUser,
-                               @RequestParam("file") MultipartFile file) throws IOException {
+                               @RequestParam("file") MultipartFile file) {
         ModelAndView modelAndView = new ModelAndView("redirect:/profile");
 
-        User user = userService.findById(currentUser.getId());
-
-        FileUtils.deleteFile(user.getImageFilename(), uploadPath);
-
-        userService.editAvatar(file, currentUser);
+        byte[] bArray = getByteArray(file);
+        currentUser.setAvatar(bArray);
+        userService.save(currentUser);
 
         return modelAndView;
     }
@@ -78,7 +75,7 @@ public class ProfileController {
                                Model model) {
         boolean isChanged = userService.editUsername(currentUser, username);
         if (!isChanged) {
-            model.addAttribute("usernameMessage", "This username exists!");
+            model.addAttribute("usernameMessage", USER_EXISTS);
             return "edit-username-page";
         }
 
@@ -92,7 +89,7 @@ public class ProfileController {
 
         userService.editEmail(currentUser, email);
 
-        modelAndView.addObject("emailMessage", "Check your email for the changes to take effect");
+        modelAndView.addObject("emailMessage", CHANGE_EMAIL_MESSAGE);
         modelAndView.addObject("user", currentUser);
         return modelAndView;
     }
@@ -106,7 +103,7 @@ public class ProfileController {
             return "redirect:/profile";
         }
 
-        model.addAttribute("repNewPasswordError", "Passwords don't match");
+        model.addAttribute("repNewPasswordError", CHANGE_PASSWORD_ERROR);
         return "edit-password-page";
     }
 }

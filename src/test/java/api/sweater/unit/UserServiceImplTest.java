@@ -1,6 +1,5 @@
-package api.sweater.unit_tests;
+package api.sweater.unit;
 
-import api.sweater.exception.ResourceNotFoundException;
 import api.sweater.model.Role;
 import api.sweater.model.User;
 import api.sweater.repository.interfaces.UserRepository;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

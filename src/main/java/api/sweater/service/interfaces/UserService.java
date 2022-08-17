@@ -31,6 +31,4 @@ public interface UserService {
     void editEmail(User user, String email);
 
     boolean editPassword(User user, String newPassword, String repNewPassword);
-
-    void editAvatar(MultipartFile file, User user) throws IOException;
 }

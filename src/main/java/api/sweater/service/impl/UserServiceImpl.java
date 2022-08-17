@@ -11,20 +11,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
-    @Value("${upload.path}")
-    private String uploadPath;
+    private final static String USER_NOT_EXISTS= "User does not exists!";
     @Value("${hostname}")
     private String hostname;
     private final UserRepository userRepository;
@@ -40,7 +34,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         User findUser = userRepository.findByUsername(username);
 
         if (findUser == null) {
-            throw new UsernameNotFoundException("There is no user with this username");
+            throw new UsernameNotFoundException(USER_NOT_EXISTS);
         }
 
         return findUser;
@@ -53,7 +47,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     public User findById(Long id) {
 
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not exists!"));
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_EXISTS));
     }
 
     public User findByUsername(String authorName) {
@@ -77,9 +71,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         userRepository.save(user);
 
-        if (!StringUtils.isEmpty(user.getEmail())) {
+        if (!user.getEmail().isEmpty()) {
             String message = String.format("Hello, %s, \n" +
-                            "Welcome to Sweater. Please, visit next link: https://%s/activate/%s",
+                            "Welcome to ShareUs. Please, visit next link: http://%s/activate/%s",
                     user.getUsername(),
                     hostname,
                     user.getActivationCode());
@@ -162,18 +156,5 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         }
         return false;
 
-    }
-
-    public void editAvatar(MultipartFile file, User user) throws IOException {
-        if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()){
-            File uploadDir = new File(uploadPath + "/profile-images");
-            if (!uploadDir.exists()){
-                uploadDir.mkdir();
-            }
-            String fileName = UUID.randomUUID() + "." + file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/profile-images/" + fileName));
-            user.setImageFilename(fileName);
-            save(user);
-        }
     }
 }

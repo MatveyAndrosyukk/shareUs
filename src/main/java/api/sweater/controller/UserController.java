@@ -1,15 +1,20 @@
 package api.sweater.controller;
 
+import api.sweater.model.Message;
 import api.sweater.model.Role;
 import api.sweater.model.User;
+import api.sweater.model.dto.MessageDto;
 import api.sweater.service.impl.UserServiceImpl;
+import api.sweater.service.interfaces.MessageService;
 import api.sweater.service.interfaces.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -17,9 +22,11 @@ import java.util.Map;
 public class UserController {
     private static final String DELETE_ADMIN_MESSAGE = "You can't delete user with role 'ADMIN'";
     private final UserService userService;
+    private final MessageService messageService;
 
-    public UserController(UserServiceImpl userService) {
+    public UserController(UserServiceImpl userService, MessageService messageService) {
         this.userService = userService;
+        this.messageService = messageService;
     }
 
     @GetMapping
@@ -34,6 +41,11 @@ public class UserController {
                 modelAndView.addObject("deleteMessage", DELETE_ADMIN_MESSAGE);
                 modelAndView.addObject("userToDelete", user);
             }else {
+                List<Message> messages = messageService.findAll();
+                messages.forEach(message -> {
+                    message.getLikes().remove(user);
+                    messageService.save(message);
+                });
                 userService.deleteById(user.getId());
             }
         }

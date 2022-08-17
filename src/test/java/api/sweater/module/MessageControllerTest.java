@@ -1,4 +1,4 @@
-package api.sweater.module_tests;
+package api.sweater.module;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

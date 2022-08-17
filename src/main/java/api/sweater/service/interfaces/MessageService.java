@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MessageService {
@@ -15,7 +16,7 @@ public interface MessageService {
 
     Page<MessageDto> findAll(Pageable pageable, User user);
 
-    Optional<Message> findById(Long id);
+    List<Message> findAll();
 
     Page<MessageDto> findByAuthor(User author, User user, Pageable pageable);
 
