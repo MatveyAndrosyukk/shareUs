@@ -26,7 +26,7 @@ Press **Ctrl+C** to stop containers running
 4. Move to a messages page and use site with pleasure.  
 5. Log in as admin and edit or delete the other users.
 
-### Also
+## Additional information
 1. If you don't want to register, you can use one of pre created users to log in:
 + admin - admin
 + user - user
