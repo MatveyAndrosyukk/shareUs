@@ -2,6 +2,8 @@
 Hello, this is a project using frameworks. Registration contains captcha, mail confirmation, password encoding.
 This is a message service, where you can post your messages, open author's profiles, subscribe and
 like their posts. You can log in as admin and edit or delete the other users.
+##Used technologies
+Spring Boot, Spring MVC, Spring Data JPA, Spring Security, Hibernate, MySQL, SQL, HQL, Recaptcha, Mail Sender, Validation, JUNIT, Module Tests, UNIT tests, Mockito, Mock Mvc, Thymeleaf, HTML, CSS, Docker, Lombok, RememberMe, FlyWay, Turbolinks, Pagination, Postman.
 ## Requirements
 + Git  
 + Docker  
