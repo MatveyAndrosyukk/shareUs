@@ -12,7 +12,7 @@ Spring Boot, Spring MVC, Spring Data JPA, Spring Security, Hibernate, MySQL, SQL
 ```
 $ git clone https://github.com/MatveyAndrosyukk/shareUs.git
 $ cd shareUs
-$ docker pull wouterpolet/maven-jdk-15
+$ docker pull molgenis/maven-jdk15
 $ docker build -t message_service .  
 $ docker-compose up -d     
 ```
