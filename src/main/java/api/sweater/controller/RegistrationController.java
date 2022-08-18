@@ -23,7 +23,7 @@ public class RegistrationController {
     private static final String EMAIL_CONFIRM_MESSAGE = "Please, activate your account";
     private static final String ACTIVATION_CODE_NOT_FOUND = "Activation code is not found!";
     private static final String USER_EXISTS = "User with this username exists, try another username!";
-    private static final String CAPTCHA_NOT_FILLED = "Fill captcha";
+    private static final String CAPTCHA_NOT_FILLED = "Please, fill the captcha";
     private final UserService userService;
     private final CaptchaService captchaService;
 
@@ -40,11 +40,12 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String registration(@RequestParam("g-recaptcha-response") String captchaResponse,
+    public String registration(@RequestParam( required = false, value = "g-recaptcha-response") String captchaResponse,
                                @ModelAttribute @Valid User user,
                                BindingResult bindingResult,
                                Model model) {
         if(captchaResponse == null){
+            model.addAttribute("captchaError", CAPTCHA_NOT_FILLED);
             return "registration-page";
         }
         if (bindingResult.hasErrors()) {
