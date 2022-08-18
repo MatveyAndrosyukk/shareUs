@@ -5,7 +5,6 @@ import api.sweater.model.Role;
 import api.sweater.model.User;
 import api.sweater.repository.interfaces.UserRepository;
 import api.sweater.service.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,8 +18,6 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final static String USER_NOT_EXISTS= "User does not exists!";
-    @Value("${hostname}")
-    private String hostname;
     private final UserRepository userRepository;
     private final MailServiceImpl mailServiceImpl;
 
@@ -73,9 +70,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         if (!user.getEmail().isEmpty()) {
             String message = String.format("Hello, %s, \n" +
-                            "Welcome to ShareUs. Please, visit next link: http://%s/activate/%s",
+                            "Welcome to ShareUs. Please, visit next link: http://localhost:8080/activate/%s",
                     user.getUsername(),
-                    hostname,
                     user.getActivationCode());
             mailServiceImpl.send(user.getEmail(), "Activation Code", message);
         }

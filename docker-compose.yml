@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   api_service:
-    build: .
+    image: message_service
     hostname: api_service
     restart: always
     ports:
@@ -9,7 +9,7 @@ services:
     depends_on:
       - mysql_db
   mysql_db:
-    image: "mysql"
+    image: mysql
     hostname: mysql_db
     restart: always
     ports:
