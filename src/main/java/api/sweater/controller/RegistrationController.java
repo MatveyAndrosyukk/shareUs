@@ -43,8 +43,10 @@ public class RegistrationController {
     public String registration(@RequestParam("g-recaptcha-response") String captchaResponse,
                                @ModelAttribute @Valid User user,
                                BindingResult bindingResult,
-                               Model model,
-                               RedirectAttributes redirectAttributes) {
+                               Model model) {
+        if(captchaResponse == null){
+            return "registration-page";
+        }
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = BindingResultUtils.getErrors(bindingResult);
 
