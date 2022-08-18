@@ -1,4 +1,4 @@
-FROM wouterpolet/maven-jdk-15
+FROM molgenis/maven-jdk15
 
 COPY ./ ./
 

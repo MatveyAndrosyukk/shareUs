@@ -8,7 +8,6 @@
         <version>2.6.6</version>
         <relativePath/>
     </parent>
-    <groupId>api</groupId>
     <artifactId>shareUs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>shareUs</name>
