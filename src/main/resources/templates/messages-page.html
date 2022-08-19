@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"/>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/static/css/img.css}"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js"></script>
     <script defer src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -133,7 +134,7 @@
             </div>
         </div>
         <div class="col">
-            <img class="float-right mt-4 img-thumbnail" th:src="@{images/logotipe.png}"/>
+            <img class="float-right mt-4 img-thumbnail oval-image" th:src="@{images/logotipe.png}"/>
         </div>
     </div>
     <div class="row mt-5">
@@ -143,7 +144,7 @@
     </div>
     <div class="row">
         <div class="card-columns mt-3" id="message-cards">
-            <div class="card" th:id="${message.id}" th:each="message : ${messages}">
+            <div class="card message-shadowed" th:id="${message.id}" th:each="message : ${messages}">
                 <div th:if="${message.image}">
                     <img class="card-img-top" th:src="@{data:image/jpeg;base64,{image}(image = ${message.image})}"
                          alt="Card image cap"/>

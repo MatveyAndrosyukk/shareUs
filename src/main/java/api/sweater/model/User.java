@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Entity
-@Table(name = "sweater_user")
+@Table(name = "shareus_user")
 @Getter
 @Setter
 @ToString
@@ -48,7 +48,7 @@ public class User implements UserDetails{
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
-            name = "sweater_user_role",
+            name = "shareus_user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
@@ -60,7 +60,7 @@ public class User implements UserDetails{
 
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
-            name = "sweater_user_subscriptions",
+            name = "shareus_user_subscriptions",
             joinColumns = @JoinColumn(name = "channel_id"),
             inverseJoinColumns = @JoinColumn(name = "subscriber_id")
     )
@@ -68,7 +68,7 @@ public class User implements UserDetails{
 
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
-            name = "sweater_user_subscriptions",
+            name = "shareus_user_subscriptions",
             joinColumns = @JoinColumn(name = "subscriber_id"),
             inverseJoinColumns = @JoinColumn(name = "channel_id")
     )

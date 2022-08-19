@@ -44,10 +44,6 @@ public class RegistrationController {
                                @ModelAttribute @Valid User user,
                                BindingResult bindingResult,
                                Model model) {
-        if(captchaResponse == null){
-            model.addAttribute("captchaError", CAPTCHA_NOT_FILLED);
-            return "registration-page";
-        }
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = BindingResultUtils.getErrors(bindingResult);
 
@@ -56,8 +52,9 @@ public class RegistrationController {
         }
 
         CaptchaResponseDto response = captchaService.getCaptchaResponse(captchaResponse);
-        if (!response.isSuccess()) {
+        if (!response.isSuccess() || captchaResponse == null) {
             model.addAttribute("captchaError", CAPTCHA_NOT_FILLED);
+            return "registration-page";
         }
 
         if (!userService.trySave(user)) {

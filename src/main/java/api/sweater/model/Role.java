@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "sweater_roles")
+@Table(name = "shareus_roles")
 @Getter
 @Setter
 public class Role implements GrantedAuthority {

@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "sweater_message")
+@Table(name = "shareus_message")
 @Getter
 @Setter
 @ToString

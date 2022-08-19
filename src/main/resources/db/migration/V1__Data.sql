@@ -1,6 +1,6 @@
 SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));
 
-CREATE TABLE IF NOT EXISTS sweater_message
+CREATE TABLE IF NOT EXISTS shareus_message
 (
     id BIGINT NOT NULL AUTO_INCREMENT,
     image longblob,
@@ -10,14 +10,14 @@ CREATE TABLE IF NOT EXISTS sweater_message
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS sweater_roles
+CREATE TABLE IF NOT EXISTS shareus_roles
 (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255),
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS sweater_user
+CREATE TABLE IF NOT EXISTS shareus_user
 (
     id BIGINT NOT NULL AUTO_INCREMENT,
     activation_code VARCHAR(255),
@@ -29,13 +29,13 @@ CREATE TABLE IF NOT EXISTS sweater_user
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS sweater_user_role
+CREATE TABLE IF NOT EXISTS shareus_user_role
 (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS sweater_user_subscriptions
+CREATE TABLE IF NOT EXISTS shareus_user_subscriptions
 (
     subscriber_id BIGINT NOT NULL,
     channel_id BIGINT NOT NULL,
@@ -46,44 +46,44 @@ CREATE TABLE IF NOT EXISTS message_likes
 (
     message_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    FOREIGN KEY (message_id) REFERENCES sweater_message (id),
-    FOREIGN KEY (user_id) REFERENCES sweater_user (id),
+    FOREIGN KEY (message_id) REFERENCES shareus_message (id),
+    FOREIGN KEY (user_id) REFERENCES shareus_user (id),
     PRIMARY KEY (message_id, user_id)
 );
 
-ALTER TABLE sweater_message
+ALTER TABLE shareus_message
     ADD CONSTRAINT message_user_fk
-        FOREIGN KEY (user_id) REFERENCES sweater_user (id);
+        FOREIGN KEY (user_id) REFERENCES shareus_user (id);
 
-ALTER TABLE sweater_user_role
+ALTER TABLE shareus_user_role
     ADD CONSTRAINT user_role_role_fk
-        FOREIGN KEY (role_id) REFERENCES sweater_roles (id);
+        FOREIGN KEY (role_id) REFERENCES shareus_roles (id);
 
-ALTER TABLE sweater_user_role
+ALTER TABLE shareus_user_role
     ADD CONSTRAINT user_role_user_fk
-        FOREIGN KEY (user_id) REFERENCES sweater_user (id);
+        FOREIGN KEY (user_id) REFERENCES shareus_user (id);
 
-ALTER TABLE sweater_user_subscriptions
+ALTER TABLE shareus_user_subscriptions
     ADD CONSTRAINT user_role_subscriptions_channel_fk
-        FOREIGN KEY (channel_id) REFERENCES sweater_user (id);
+        FOREIGN KEY (channel_id) REFERENCES shareus_user (id);
 
-ALTER TABLE sweater_user_subscriptions
+ALTER TABLE shareus_user_subscriptions
     ADD CONSTRAINT user_role_subscriptions_subscriber_fk
-        FOREIGN KEY (subscriber_id) REFERENCES sweater_user (id);
+        FOREIGN KEY (subscriber_id) REFERENCES shareUs_user (id);
 
 
-INSERT INTO sweater_user (id, active, password, username, email)
+INSERT INTO shareus_user (id, active, password, username, email)
 VALUES (1, TRUE, '$2a$12$StHXG5uhtPOK5CswFuvZNu4JqTBhFQSL/fthsMIJketj/klNuX04m', 'admin', 'administrator@mail.ru'),
        (2, TRUE, '$2a$12$145m9lMUWTl/k7mMs4t5c.rjI50hiaxqU2CN4FTLv5Vp.OGannJam', 'user', 'user@mail.ru');
 
-INSERT INTO sweater_roles (id, name)
+INSERT INTO shareus_roles (id, name)
 VALUES (1, 'ADMIN'), (2, 'USER');
 
-INSERT INTO sweater_user_role (user_id, role_id)
+INSERT INTO shareus_user_role (user_id, role_id)
 VALUES (1, 1), (1, 2), (2, 2);
 
 
-INSERT INTO sweater_message (id, image, tag, text, user_id)
+INSERT INTO shareus_message (id, image, tag, text, user_id)
 VALUES (1, NULL, '#programming',
         'Java — строго типизированный объектно-ориентированный язык программирования общего назначения, разработанный компанией Sun Microsystems. Разработка ведётся сообществом, организованным через Java Community Process; язык и основные реализующие его технологии распространяются по лицензии GPL.', 1),
        (2, NULL, '#subscribe',
